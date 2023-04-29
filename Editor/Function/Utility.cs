@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.Animations;
+using UnityEngine;
 
 namespace TransitionHelper
 {
@@ -16,7 +19,7 @@ namespace TransitionHelper
             return parentPath;
         }
         public static void AddState(AnimatorStateMachine stateMachine, List<UnityEditor.Animations.AnimatorState> result)
-        {
+        {   
             foreach (var state in stateMachine.states)
             {
                 result.Add(state.state);
@@ -57,6 +60,18 @@ namespace TransitionHelper
             {
                 GetAllStatesTransitions(subStateMachine.stateMachine, parentPath, result);
             }
+        }
+
+        public static bool IsBlendTreeState(AnimatorState state)
+        {
+            return state.motion is BlendTree;
+        }
+
+        public static GUIStyle GetNomalFontStyle()
+        {
+            GUIStyle style = new GUIStyle();
+            style.fontStyle = FontStyle.Normal;
+            return style;
         }
     }
 }

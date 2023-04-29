@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PlasticGui.Help;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
@@ -28,8 +29,11 @@ namespace TransitionHelper
         bool fixedDuration = true;
         int transitionDuration = 0;
         int transitionOffset = 0;
+        bool keepWriteDefaultsOfBlendTree = true;
+        // 設定のラベルとコンテンツの間の空欄の幅
+        private const float SETTINGS_LABEL_WIDTH_OFFSET = 10f;
 
-        [MenuItem("Tools/Transition Helper")]
+        [MenuItem("Tools/もちもちまーと/Transition Helper")]
         public static void OpenWindow()
         {
             TransitionHelperView window = GetWindow<TransitionHelperView>();
@@ -170,6 +174,10 @@ namespace TransitionHelper
                 // Write Defaultsの設定
                 foreach (var state in states)
                 {
+                    if (Utility.IsBlendTreeState(state) && keepWriteDefaultsOfBlendTree)
+                    {
+                        continue;
+                    }
                     if (writeDefaultsOff)
                     {
                         state.writeDefaultValues = false;
@@ -211,10 +219,14 @@ namespace TransitionHelper
         // 設定の描画
         private void DrawSettingsFoldOut()
         {
+            float LabelWidth = Utility.GetNomalFontStyle().CalcSize(new GUIContent(Localization.lang.keepWriteDefaultsOfBlendTree)).x + SETTINGS_LABEL_WIDTH_OFFSET;
             showSettings = EditorGUILayout.Foldout(showSettings, Localization.lang.settingsLabelText);
             if (showSettings)
             {
-                hasExitTime = EditorGUILayout.Toggle("Has Exit Time", hasExitTime);
+                using (new LabelWidthScope(LabelWidth))
+                {
+                    hasExitTime = EditorGUILayout.Toggle("Has Exit Time", hasExitTime);
+                }
                 if (!hasExitTime)
                 {
 
@@ -227,10 +239,14 @@ namespace TransitionHelper
                         }
                     }
                 }
-                exitTime = EditorGUILayout.FloatField("Exit Time", exitTime);
-                fixedDuration = EditorGUILayout.Toggle("Fixed Duration", fixedDuration);
-                transitionDuration = EditorGUILayout.IntField("Transition Duration", transitionDuration);
-                transitionOffset = EditorGUILayout.IntField("Transition Offset", transitionOffset);
+                using (new LabelWidthScope(LabelWidth))
+                {
+                    exitTime = EditorGUILayout.FloatField("Exit Time", exitTime);
+                    fixedDuration = EditorGUILayout.Toggle("Fixed Duration", fixedDuration);
+                    transitionDuration = EditorGUILayout.IntField("Transition Duration", transitionDuration);
+                    transitionOffset = EditorGUILayout.IntField("Transition Offset", transitionOffset);
+                    keepWriteDefaultsOfBlendTree = EditorGUILayout.Toggle(Localization.lang.keepWriteDefaultsOfBlendTree, keepWriteDefaultsOfBlendTree);
+                }
             }
         }
 

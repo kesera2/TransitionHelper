@@ -17,6 +17,8 @@ MonoBehaviour:
     \uD2B8\uB79C\uC9C0\uC158\uC5D0 \uB300\uD574\uC11C\uB294 \uBCC0\uACBD\uD558\uC9C0
     \uC54A\uB294\uB2E4"
   writeDefaultsOffText: "\uC4F0\uAE30 \uAE30\uBCF8\uAC12 \uC0AC\uC6A9 \uC548 \uD568"
+  keepWriteDefaultsOfBlendTree: "BlendTree\uC758 WriteDefaults \uC0C1\uD0DC\uB97C
+    \uC720\uC9C0\uD55C\uB2E4."
   setupButtonText: "\uC14B\uC5C5"
   toggleAll: "\uBAA8\uB4E0 \uAC83\uC5D0 \uCCB4\uD06C\uB97C \uD558\uB2E4"
   toggleNone: "\uBAA8\uB4E0 \uCCB4\uD06C\uB97C \uB5BC\uB2E4"

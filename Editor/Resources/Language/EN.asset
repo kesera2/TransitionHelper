@@ -16,6 +16,7 @@ MonoBehaviour:
   ignoreNoConditionText: No change is made for transitions for which no transition
     conditions are specified.
   writeDefaultsOffText: Turn off Write Defaults
+  keepWriteDefaultsOfBlendTree: Keep Write Deffaults Of Blend Tree
   setupButtonText: Setup
   toggleAll: Toglle All
   toggleNone: Toggle None

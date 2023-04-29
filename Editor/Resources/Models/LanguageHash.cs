@@ -9,6 +9,7 @@ namespace TransitionHelper
         public string settingsLabelText;
         public string ignoreNoConditionText;
         public string writeDefaultsOffText;
+        public string keepWriteDefaultsOfBlendTree;
 
         [Header("Button")]
         public string setupButtonText;
