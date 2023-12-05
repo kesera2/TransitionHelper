@@ -1,8 +1,8 @@
-﻿using PlasticGui.Help;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
+using UnityEditor.PackageManager.UI;
 using UnityEngine;
 
 // Copyright (c) 2023 kesera2
@@ -32,6 +32,12 @@ namespace TransitionHelper
         bool keepWriteDefaultsOfBlendTree = true;
         // 設定のラベルとコンテンツの間の空欄の幅
         private const float SETTINGS_LABEL_WIDTH_OFFSET = 10f;
+        // Tabの表示名
+        private readonly string[] _tabToggles = { "Controller指定", "Transition指定" };
+        // 選択中のTab
+        private int _tabIndex;
+        // 選択中のトランジション
+        private int _transitionCount = 0;
 
         [MenuItem("Tools/もちもちまーと/Transition Helper")]
         public static void OpenWindow()
@@ -48,15 +54,27 @@ namespace TransitionHelper
             Localization.Localize();
             DrawLogo();
             DrawInfomation();
+            DrawTabs();
             DrawAnimatorController();
-            DrawToggleButtons();
-            DrawMainOptions();
+            if (_tabIndex == 0)
+            {
+                DrawToggleButtons();
+                DrawMainOptions();
+            }
+            test();
             DrawErrorBox();
             DrawSettingsFoldOut();
             DrawExecuteButton();
             //スクロール箇所終了
             EditorGUILayout.EndScrollView();
         }
+        void test() {
+            AnimatorStateTransition[] x = Selection.objects.Select(x => x as AnimatorStateTransition).ToArray();
+            foreach(AnimatorStateTransition a  in x) {
+                Debug.Log(a.name);
+            }
+        }
+
 
         // ロゴの描画
         private static void DrawLogo()
@@ -67,6 +85,70 @@ namespace TransitionHelper
             EditorGUILayout.LabelField(new GUIContent(logo), GUILayout.Height(100), GUILayout.Width(400));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+        }
+
+        // Tabの描画
+        private void DrawTabs()
+        {
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
+            {
+                _tabIndex = GUILayout.Toolbar(_tabIndex, _tabToggles, new GUIStyle(EditorStyles.toolbarButton), GUI.ToolbarButtonSize.FitToContents);
+            }
+            _transitionCount = Selection.objects.Select(x => x as AnimatorStateTransition).Where(y => y != null).ToArray().Length;
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Label("Transitions");
+
+            }
+        }
+
+        private void sample() {
+            AnimatorController animatorController = null;
+            AnimatorStateMachine stateMachine = null;
+            AnimatorStateTransition transition = null;
+
+            // Animatorウィンドウで選択されたトランジションを取得
+            if (EditorWindow.focusedWindow != null && EditorWindow.focusedWindow.titleContent.text == "Animator")
+            {
+                EditorWindow animatorWindow = EditorWindow.focusedWindow;
+                System.Type animatorWindowType = animatorWindow.GetType();
+                var controllerProperty = animatorWindowType.GetProperty("controller");
+                Debug.Log("controllerProperty is null?" + controllerProperty == null);
+                animatorController = controllerProperty.GetValue(animatorWindow, null) as AnimatorController;
+
+                var stateMachineProperty = animatorWindowType.GetProperty("stateMachine");
+                stateMachine = stateMachineProperty.GetValue(animatorWindow, null) as AnimatorStateMachine;
+
+                var transitionProperty = animatorWindowType.GetProperty("transition");
+                transition = transitionProperty.GetValue(animatorWindow, null) as AnimatorStateTransition;
+            }
+
+            if (animatorController != null && stateMachine != null && transition != null)
+            {
+                string sourceStateName = GetStateName(animatorController, transition.destinationState);
+                string destinationStateName = GetStateName(animatorController, transition.destinationState);
+
+                EditorGUILayout.LabelField("Selected Transition Info", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("Source State:", sourceStateName);
+                EditorGUILayout.LabelField("Destination State:", destinationStateName);
+            }
+        }
+
+        private string GetStateName(AnimatorController animatorController, AnimatorState state)
+        {
+            for (int i = 0; i < animatorController.layers.Length; i++)
+            {
+                AnimatorStateMachine stateMachine = animatorController.layers[i].stateMachine;
+                for (int j = 0; j < stateMachine.states.Length; j++)
+                {
+                    if (stateMachine.states[j].state == state)
+                    {
+                        return stateMachine.states[j].state.name;
+                    }
+                }
+            }
+
+            return "Unknown";
         }
 
         // Animator Controller関連の描画
@@ -167,10 +249,17 @@ namespace TransitionHelper
                 }
 
                 // 取得したtransition全てに適用させる
-                foreach (AnimatorStateTransition transition in transitions)
+                //foreach (AnimatorStateTransition transition in transitions)
+                //{
+                //    SetTransitionValue(transition);
+                //}
+
+                AnimatorStateTransition[] selectedTransitions = Selection.objects.Select(x => x as AnimatorStateTransition).Where(y => y != null).ToArray();
+                foreach (var selectedTransition in selectedTransitions)
                 {
-                    SetTransitionValue(transition);
+                    SetTransitionValue(selectedTransition);
                 }
+
                 // Write Defaultsの設定
                 foreach (var state in states)
                 {
