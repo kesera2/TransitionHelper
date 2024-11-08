@@ -1,5 +1,4 @@
-﻿using PlasticGui.Help;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
@@ -8,30 +7,34 @@ using UnityEngine;
 // Copyright (c) 2023 kesera2
 namespace TransitionHelper
 {
+    /// <summary>
+    /// TransitionHelperViewクラスは、UnityのEditorWindowを拡張してトランジションの操作を補助するためのウィンドウを提供します。
+    /// </summary>
     public class TransitionHelperView : EditorWindow
     {
-        private static Texture2D logo;
-        // スクロール位置
-        private Vector2 _scrollPosition = Vector2.zero;
-        // アニメーターコントローラー指定時のAnimatorController
-        private AnimatorController animatorController;
-        // 有効状態のレイヤー
-        private bool[] layerEnabled = { };
-        // サブステートマシンのチェックボックスの有効状態
-        bool includeSubStateMachine = true;
-        // Conditionsの指定のないHasExitTimeの設定を無視する
-        bool ignoreNoCondition = true;
-        // 設定
-        bool writeDefaultsOff = true;
-        bool showSettings = false;
-        bool hasExitTime = false;
-        float exitTime = 0;
-        bool fixedDuration = true;
-        int transitionDuration = 0;
-        int transitionOffset = 0;
-        bool keepWriteDefaultsOfBlendTree = true;
-        // 設定のラベルとコンテンツの間の空欄の幅
-        private const float SETTINGS_LABEL_WIDTH_OFFSET = 10f;
+        private static Texture2D logo;                          // ロゴのテクスチャ
+        private Vector2 _scrollPosition = Vector2.zero;         // スクロール位置
+        private AnimatorController animatorController;          // アニメーターコントローラー指定時のAnimatorController
+        private bool[] layerEnabled = { };                      // 有効状態のレイヤー
+        bool includeSubStateMachine = true;                     // サブステートマシンのチェックボックスの有効状態
+        bool ignoreNoCondition = true;                          // Conditionsの指定のないHasExitTimeの設定を無視する
+        bool writeDefaultsOff = true;                           // 設定
+        bool showSettings = false;                              // 設定を表示するかどうか
+        bool hasExitTime = false;                               // トランジションに出口時間があるかどうか
+        float exitTime = 0;                                     // 遷移終了時間（0から1の範囲）
+        bool fixedDuration = true;                              // トランジションの固定時間を使用するかどうか
+        int transitionDuration = 0;                             // トランジションの固定時間（ミリ秒）
+        int transitionOffset = 0;                               // トランジションのオフセット時間（ミリ秒）
+        bool keepWriteDefaultsOfBlendTree = true;               // Blend Treeのデフォルト値を保持するかどうか
+        private const float SETTINGS_LABEL_WIDTH_OFFSET = 10f;  // 設定のラベルとコンテンツの間の空欄の幅
+        private string[] _tabToggles;                           // Tabの表示名
+        private int _tabIndex;                                  // 選択中のTab
+        AnimatorStateTransition[] selectedStateTransitions;     // ステートからのトランジション
+        AnimatorTransition[] selectedStateMachineTransitions;   // ステートマシンからのトランジション
+        Dictionary<int, string> destSourceTransitionPairs;      // ステートのインスタンスIDとトランジションを紐付ける辞書
+        private int selectedTransitionCount = 0;                // 選択中のトランジションの数
+        private bool executeButtonDisabled;                     // 実行ボタンの非活性の有無
+        bool showTransitions = true;                            // 選択中のトランジションを表示するかどうか(Foldに使用）
 
         [MenuItem("Tools/もちもちまーと/Transition Helper")]
         public static void OpenWindow()
@@ -41,24 +44,61 @@ namespace TransitionHelper
             window.Show();
         }
 
+        private void OnEnable()
+        {
+            Localization.Localize();
+            _tabToggles = new string[] { Localization.lang.layerSpecificationMode, Localization.lang.transitionSpecificationMode };
+        }
+
+        void OnInspectorUpdate()
+        {
+            // レイヤー名の更新がマウスオーバー時になるのを防ぐ
+            Repaint();
+        }
+
         private void OnGUI()
         {
             // 描画範囲が足りなければスクロール出来るように
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
-            Localization.Localize();
+
             DrawLogo();
             DrawInfomation();
+            DrawTabs();
             DrawAnimatorController();
-            DrawToggleButtons();
-            DrawMainOptions();
+            if (isSpecifiedLayerTab())
+            {
+                DrawToggleButtons();
+                DrawMainOptions();
+                DrawLayers();
+            }
+            else if (isSpecifiedTransitionTab())
+            {
+                DrawTransitionMenu();
+            }
             DrawErrorBox();
             DrawSettingsFoldOut();
             DrawExecuteButton();
+            DrawDebugTransitionName();
+            
             //スクロール箇所終了
             EditorGUILayout.EndScrollView();
         }
 
-        // ロゴの描画
+        void DrawDebugTransitionName()
+        {
+            if (GUILayout.Button("Debug Transition Name"))
+            {
+                destSourceTransitionPairs = Utility.GetDestSourceTransitionPairs(animatorController); // ステート名辞書を取得
+                foreach (KeyValuePair<int, string> kvp in destSourceTransitionPairs)
+                {
+                    Debug.Log("Key:" + kvp.Key + " Value:" + kvp.Value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// ロゴを描画するためのメソッドです。
+        /// </summary>
         private static void DrawLogo()
         {
             GUILayout.BeginHorizontal();
@@ -69,16 +109,29 @@ namespace TransitionHelper
             GUILayout.EndHorizontal();
         }
 
-        // Animator Controller関連の描画
+        /// <summary>
+        /// タブを描画するためのメソッドです。
+        /// </summary>
+        private void DrawTabs()
+        {
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
+            {
+                _tabIndex = GUILayout.Toolbar(_tabIndex, _tabToggles, new GUIStyle(EditorStyles.toolbarButton), GUI.ToolbarButtonSize.FitToContents);
+            }
+        }
+
+        /// <summary>
+        /// Animator Controller関連の描画を行うためのメソッドです。
+        /// </summary>
         private void DrawAnimatorController()
         {
             animatorController = (AnimatorController)EditorGUILayout.ObjectField("Animator Controller", animatorController, typeof(AnimatorController), false);
+            if (animatorController == null)
+            {
+                return;
+            }
             using (new EditorGUI.IndentLevelScope())
             {
-                if (animatorController == null)
-                {
-                    return;
-                }
                 // AnimatorControllerに設定されているレイヤーの名前をチェックボックスとして表示する
                 if (layerEnabled == null || layerEnabled.Length != animatorController.layers.Length)
                 {
@@ -88,14 +141,124 @@ namespace TransitionHelper
                         layerEnabled[i] = false; // デフォルトはアンチェック
                     }
                 }
-                for (int i = 0; i < animatorController.layers.Length; i++)
+            }
+        }
+
+        /// <summary>
+        /// レイヤーのリストを描画を行うためのメソッドです。
+        /// </summary>
+        private void DrawLayers()
+        {
+            using (new EditorGUILayout.VerticalScope("Box"))
+            {
+                if (animatorController != null)
                 {
-                    layerEnabled[i] = EditorGUILayout.ToggleLeft("　" + animatorController.layers[i].name, layerEnabled[i]);
+                    for (int i = 0; i < animatorController.layers.Length; i++)
+                    {
+                        layerEnabled[i] = EditorGUILayout.ToggleLeft("　" + animatorController.layers[i].name, layerEnabled[i]);
+                    }
                 }
             }
         }
 
-        // トグルボタンの描画
+        /// <summary>
+        /// トランジション指定モードの描画を行うためのメソッドです。
+        /// </summary>
+        private void DrawTransitionMenu()
+        {
+            if (animatorController == null)
+            {
+                return;
+            }
+            selectedStateTransitions = Selection.objects.OfType<AnimatorStateTransition>().Where(t => t != null).ToArray(); // 選択中ステートマシンのトランジション
+            selectedStateMachineTransitions = Selection.objects.OfType<AnimatorTransition>().Where(t => t != null).ToArray(); // 選択中サブステートマシンのトランジション
+            selectedTransitionCount = selectedStateTransitions.Length + selectedStateMachineTransitions.Length; // 選択中のトランジションの数を合算
+            destSourceTransitionPairs = Utility.GetDestSourceTransitionPairs(animatorController); // ステート名辞書を取得
+            GUILayout.Label(string.Format(Localization.lang.selectedLayer, Utility.getSelectedLayerName(animatorController))); // 選択中のレイヤーラベル
+            using (new GUILayout.HorizontalScope())
+            {
+                if (GUILayout.Button(Localization.lang.selectAllTransitionsButton))
+                {
+                    Utility.selectAllTransitions(Utility.getSelectedLayer(animatorController));
+                }
+                if (GUILayout.Button(Localization.lang.unselectTransitionsButton))
+                {
+                    Utility.unselectTransitions();
+                }
+            }
+            EditorGUILayout.BeginVertical("box");
+            // 選択中のトランジションのフォールドを表示（デフォルト表示）
+            showTransitions = EditorGUILayout.Foldout(showTransitions, string.Format(Localization.lang.selectedTransitionsCount, selectedTransitionCount));
+            // 遷移元 -> 遷移先のリストを描画
+            if (showTransitions)
+            {
+                EditorGUI.indentLevel++;
+                // ステートマシンの遷移元 -> 遷移先のリストを描画
+                foreach (AnimatorStateTransition transition in selectedStateTransitions)
+                {
+                    string sourceStateName = string.Empty;
+                    string destStateName = string.Empty;
+                    if (transition.destinationState != null)
+                    {
+                        sourceStateName = destSourceTransitionPairs[transition.destinationState.GetInstanceID()];
+                        destStateName = transition.destinationState.name;
+                    }
+                    else if (transition.destinationStateMachine != null)
+                    {
+                        sourceStateName = destSourceTransitionPairs[transition.destinationStateMachine.GetInstanceID()];
+                        destStateName = transition.destinationStateMachine.name;
+                    }
+                    else if (transition.isExit)
+                    {
+                        sourceStateName = destSourceTransitionPairs[transition.GetInstanceID()];
+                        destStateName = "Exit";
+                    }
+                    if (!string.IsNullOrEmpty(destStateName) && !string.IsNullOrEmpty(sourceStateName))
+                    {
+                        EditorGUILayout.LabelField($"{sourceStateName} -> {destStateName}");
+                    }
+                }
+                // サブステートマシンの遷移元 -> 遷移先のリストを描画
+                foreach (AnimatorTransition transition in selectedStateMachineTransitions)
+                {
+                    string sourceStateName = string.Empty;
+                    string destStateName = string.Empty;
+                    if (transition.destinationState != null)
+                    {
+                        if (transition.destinationState != null)
+                        {
+                            sourceStateName = destSourceTransitionPairs[transition.destinationState.GetInstanceID()];
+                            destStateName = transition.destinationState.name;
+                        }
+                        else if (transition.destinationStateMachine != null)
+                        {
+                            sourceStateName = destSourceTransitionPairs[transition.destinationStateMachine.GetInstanceID()];
+                            destStateName = transition.destinationStateMachine.name;
+                        }
+                    }
+                    else if (transition.destinationStateMachine != null)
+                    {
+                        sourceStateName = destSourceTransitionPairs[transition.destinationStateMachine.GetHashCode()];
+                        destStateName = transition.destinationStateMachine.name;
+                    }
+                    else if (transition.isExit)
+                    {
+                        sourceStateName = destSourceTransitionPairs[transition.GetInstanceID()];
+                        destStateName = "Exit";
+                    }
+                    if (!string.IsNullOrEmpty(destStateName) && !string.IsNullOrEmpty(sourceStateName))
+                    {
+                        EditorGUILayout.LabelField($"{sourceStateName} -> {destStateName}");
+                    }
+                }
+                EditorGUI.indentLevel = 0;
+            }
+            EditorGUILayout.EndVertical();
+        }
+
+        /// <summary>
+        /// トグルボタンの描画を行うためのメソッドです。
+        /// </summary>
         private void DrawToggleButtons()
         {
             if (animatorController == null)
@@ -124,13 +287,18 @@ namespace TransitionHelper
             }
         }
 
-        // 説明の描画
+        /// <summary>
+        /// 説明の描画を行うためのメソッドです。
+        /// </summary>
         private void DrawInfomation()
         {
             EditorGUILayout.HelpBox(Localization.lang.infoExplainMessage, MessageType.Info);
         }
 
-        // 確認ダイアログの表示
+        /// <summary>
+        /// 確認ダイアログを表示するためのメソッドです。
+        /// </summary>
+        /// <returns>ダイアログでのユーザーの選択結果を表すbool値</returns>
         private bool DisplayConfirmDialog()
         {
             return EditorUtility.DisplayDialog(
@@ -140,57 +308,80 @@ namespace TransitionHelper
             Localization.lang.answerNo);
         }
 
-        // 実行ボタンの描画
+        /// <summary>
+        /// 実行ボタンの描画を行うためのメソッドです。
+        /// </summary>
         private void DrawExecuteButton()
         {
             // アニメーターが選択されていないまたはレイヤーが1つも選択されていない場合、実行ボタンをDisable
-            EditorGUI.BeginDisabledGroup(!(isAnimatorControlerEmpty() || isLayerSelectedAtLeastOne()));
+            executeButtonDisabled = isAnimatorControlerEmpty() || !(isSpecifiedLayerTab() && isLayerSelectedAtLeastOne()) && !isSeletectedTransitions();
+            EditorGUI.BeginDisabledGroup(executeButtonDisabled);
             if (GUILayout.Button(Localization.lang.setupButtonText, GUILayout.Height(40)))
             {
                 if (!DisplayConfirmDialog())
                 {
                     return;
                 }
-                List<AnimatorStateTransition> transitions = null;
-
-                // Animator Controllerの指定がある場合
-                List<AnimatorControllerLayer> layers = GetTargetLayer(animatorController.layers.ToList());
-                List<AnimatorState> states = null;
-                if (includeSubStateMachine)
+                // レイヤー指定の場合
+                if (isSpecifiedLayerTab())
                 {
-                    transitions = GetSubStateMachineTransitions(layers);
-                    states = GetSubStateMachineStates(layers);
+                    SetupLayers();
                 }
-                else
+                // トランジション指定の場合
+                else if (isSpecifiedTransitionTab())
                 {
-                    transitions = layers.Select(c => c.stateMachine).SelectMany(c => c.states).SelectMany(c => c.state.transitions).ToList();
+                    setupSelectedTransitions();
                 }
-
-                // 取得したtransition全てに適用させる
-                foreach (AnimatorStateTransition transition in transitions)
-                {
-                    SetTransitionValue(transition);
-                }
-                // Write Defaultsの設定
-                foreach (var state in states)
-                {
-                    if (Utility.IsBlendTreeState(state) && keepWriteDefaultsOfBlendTree)
-                    {
-                        continue;
-                    }
-                    if (writeDefaultsOff)
-                    {
-                        state.writeDefaultValues = false;
-                    }
-                }
-
                 // 変更を保存する
-                SaveChanges();
+                Utility.SaveChanges();
             }
             EditorGUI.EndDisabledGroup();
         }
 
-        // SubStateMachineを含むチェックボックスを描画
+        /// <summary>
+        /// レイヤーの設定を行うためのメソッドです。レイヤー指定モードに使用。
+        /// </summary>
+        private void SetupLayers()
+        {
+            List<AnimatorStateTransition> transitions;
+            List<AnimatorControllerLayer> layers = GetTargetLayer(animatorController.layers.ToList());
+            List<AnimatorState> states = null;
+            // トランジション全取得
+            if (includeSubStateMachine)
+            {
+                // サブステートマシンがある場合
+                transitions = GetSubStateMachineTransitions(layers);
+                states = GetSubStateMachineStates(layers);
+            }
+            else
+            {
+                // ステートのみの場合
+                transitions = layers.Select(c => c.stateMachine).SelectMany(c => c.states).SelectMany(c => c.state.transitions).ToList();
+            }
+            // Write Defaultsの設定
+            setupWriteDefaultsToLayer(states);
+            //取得したtransition全てに適用させる
+            foreach (AnimatorStateTransition transition in transitions)
+            {
+                SetTransitionValue(transition);
+            }
+        }
+
+        /// <summary>
+        /// 選択されたトランジションのセットアップを行うためのメソッドです。トランジション指定モードに使用。
+        /// </summary>
+        private void setupSelectedTransitions()
+        {
+            AnimatorStateTransition[] selectedTransitions = Selection.objects.Select(x => x as AnimatorStateTransition).Where(y => y != null).ToArray();
+            foreach (var selectedTransition in selectedTransitions)
+            {
+                SetTransitionValue(selectedTransition);
+            }
+        }
+
+        /// <summary>
+        /// レイヤー指定モードの「サブステートマシンを含む」「WriteDefaultsをOFFにする」チェックボックスを描画するためのメソッドです。
+        /// </summary>
         private void DrawMainOptions()
         {
             using (new EditorGUI.IndentLevelScope())
@@ -203,7 +394,9 @@ namespace TransitionHelper
             }
         }
 
-        // エラーメッセージの描画
+        /// <summary>
+        /// SubStateMachineを含むチェックボックスを描画するためのメソッドです。
+        /// </summary>
         private void DrawErrorBox()
         {
             List<string> messages = GetErrorMessages();
@@ -216,14 +409,16 @@ namespace TransitionHelper
             }
         }
 
-        // 設定の描画
+        /// <summary>
+        /// 設定の描画を行うためのメソッドです。
+        /// </summary>
         private void DrawSettingsFoldOut()
         {
-            float LabelWidth = Utility.GetNomalFontStyle().CalcSize(new GUIContent(Localization.lang.keepWriteDefaultsOfBlendTree)).x + SETTINGS_LABEL_WIDTH_OFFSET;
+            float labelWidth = Utility.GetNomalFontStyle().CalcSize(new GUIContent(Localization.lang.keepWriteDefaultsOfBlendTree)).x + SETTINGS_LABEL_WIDTH_OFFSET;
             showSettings = EditorGUILayout.Foldout(showSettings, Localization.lang.settingsLabelText);
             if (showSettings)
             {
-                using (new LabelWidthScope(LabelWidth))
+                using (new LabelWidthScope(labelWidth))
                 {
                     hasExitTime = EditorGUILayout.Toggle("Has Exit Time", hasExitTime);
                 }
@@ -239,7 +434,7 @@ namespace TransitionHelper
                         }
                     }
                 }
-                using (new LabelWidthScope(LabelWidth))
+                using (new LabelWidthScope(labelWidth))
                 {
                     exitTime = EditorGUILayout.FloatField("Exit Time", exitTime);
                     fixedDuration = EditorGUILayout.Toggle("Fixed Duration", fixedDuration);
@@ -250,7 +445,11 @@ namespace TransitionHelper
             }
         }
 
-        // レイヤーの取得
+        /// <summary>
+        /// ターゲットレイヤーを取得するためのメソッドです。
+        /// </summary>
+        /// <param name="layers">全体のレイヤーリスト</param>
+        /// <returns>ターゲットレイヤーのリスト。</returns>
         private List<AnimatorControllerLayer> GetTargetLayer(List<AnimatorControllerLayer> layers)
         {
             for (int i = layers.Count - 1; i >= 0; i--)
@@ -264,7 +463,10 @@ namespace TransitionHelper
             return layers;
         }
 
-        // トランジションの設定
+        /// <summary>
+        /// トランジションの設定を行うためのメソッドです。
+        /// </summary>
+        /// <param name="transition">設定するトランジション</param>
         private void SetTransitionValue(AnimatorStateTransition transition)
         {
             if (!(transition.conditions.Length == 0 && ignoreNoCondition))
@@ -277,7 +479,30 @@ namespace TransitionHelper
             transition.offset = transitionOffset;
         }
 
-        // トランジションの全取得
+        /// <summary>
+        /// Write Defaultsの設定を行うためのメソッドです。
+        /// </summary>
+        /// <param name="states">ステートのリスト</param>
+        private void setupWriteDefaultsToLayer(List<AnimatorState> states)
+        {
+            foreach (var state in states)
+            {
+                if (Utility.IsBlendTreeState(state) && keepWriteDefaultsOfBlendTree)
+                {
+                    continue;
+                }
+                if (writeDefaultsOff)
+                {
+                    state.writeDefaultValues = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// サブステートマシンのトランジションを全て取得するためのメソッドです。
+        /// </summary>
+        /// <param name="layers">全体のレイヤーリスト。</param>
+        /// <returns>サブステートマシンのトランジションのリスト</returns>
         private List<AnimatorStateTransition> GetSubStateMachineTransitions(List<AnimatorControllerLayer> layers)
         {
             List<AnimatorStateTransition> result = new List<AnimatorStateTransition>();
@@ -296,7 +521,11 @@ namespace TransitionHelper
             return result;
         }
 
-        // 再帰処理: ステートの取得
+        /// <summary>
+        /// サブステートマシン内のステートを再帰的に取得するためのメソッドです。
+        /// </summary>
+        /// <param name="layers">全体のレイヤーリスト。</param>
+        /// <returns>サブステートマシン内のステートのリスト</returns>
         private List<AnimatorState> GetSubStateMachineStates(List<AnimatorControllerLayer> layers)
         {
             List<AnimatorState> result = new List<AnimatorState>();
@@ -307,7 +536,10 @@ namespace TransitionHelper
             return result;
         }
 
-        // エラーメッセージ取得
+        /// <summary>
+        /// エラーメッセージを取得するためのメソッドです。
+        /// </summary>
+        /// <returns>エラーメッセージのリスト</returns>
         private List<string> GetErrorMessages()
         {
             List<string> messages = new List<string>();
@@ -315,20 +547,37 @@ namespace TransitionHelper
             {
                 messages.Add(Localization.lang.errorMessage);
             }
-            else if (!isLayerSelectedAtLeastOne())
+            else if (isSpecifiedLayerTab())
             {
-                messages.Add(Localization.lang.errorNeedsToSelectLayer);
+                if (!isLayerSelectedAtLeastOne())
+                {
+                    messages.Add(Localization.lang.errorNeedsToSelectLayer);
+                }
             }
+            else if (isSpecifiedTransitionTab())
+            {
+                if (!isSeletectedTransitions())
+                {
+                    messages.Add(Localization.lang.errorNeedsToSelectTransition);
+                }
+            }
+
             return messages;
         }
 
-        // Animator Controllerが空の状態か
+        /// <summary>
+        /// Animator Controllerが空の状態かどうかを判定するためのメソッドです。
+        /// </summary>
+        /// <returns>Animator Controllerが空の状態であればtrue、そうでなければfalse</returns>
         private bool isAnimatorControlerEmpty()
         {
             return animatorController == null;
         }
 
-        // レイヤーが一つ以上選択されているか
+        /// <summary>
+        /// レイヤーが一つ以上選択されているかどうかを判定するためのメソッドです。
+        /// </summary>
+        /// <returns>レイヤーが一つ以上選択されていればtrue、そうでなければfalse</returns>
         private bool isLayerSelectedAtLeastOne()
         {
             foreach (bool isEnabled in layerEnabled)
@@ -341,12 +590,35 @@ namespace TransitionHelper
             return false;
         }
 
-        // 設定の保存
-        private void SaveChanges()
+        /// <summary>
+        /// 表示中のレイヤーでトランジションが選択されているかどうかを判定するためのメソッドです。
+        /// </summary>
+        /// <returns>トランジション選択されていればtrue、そうでなければfalse</returns>
+        private bool isSeletectedTransitions()
         {
-            Debug.Log(Localization.lang.logMessage);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
+            if (isSpecifiedTransitionTab() && selectedStateTransitions != null)
+            {
+                return selectedTransitionCount > 0;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// レイヤー指定モードタブが選択されているかどうかを判定するためのメソッドです。
+        /// </summary>
+        /// <returns>レイヤー指定モードタブが選択されていればtrue、そうでなければfalse。</returns>
+        private bool isSpecifiedLayerTab()
+        {
+            return _tabIndex == 0;
+        }
+
+        /// <summary>
+        /// トランジション指定モードが選択されているかどうかを判定するためのメソッドです。
+        /// </summary>
+        /// <returns>トランジション指定モードが選択されていればtrue、そうでなければfalse。</returns>
+        private bool isSpecifiedTransitionTab()
+        {
+            return _tabIndex == 1;
         }
     }
 }

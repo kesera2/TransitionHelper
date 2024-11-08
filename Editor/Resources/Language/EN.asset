@@ -12,16 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 543a35b5fcb2dfe40b17c942e24c0ac7, type: 3}
   m_Name: EN
   m_EditorClassIdentifier: 
+  layerSpecificationMode: Layer Specification Mode
+  transitionSpecificationMode: Transition Specification Mode
   settingsLabelText: Settings
   ignoreNoConditionText: No change is made for transitions for which no transition
     conditions are specified.
   writeDefaultsOffText: Turn off Write Defaults
   keepWriteDefaultsOfBlendTree: Keep Write Deffaults Of Blend Tree
+  selectedLayer: 'Layer name : {0}'
+  selectedTransitionsCount: '{0} transitions selected'
   setupButtonText: Setup
   toggleAll: Toglle All
   toggleNone: Toggle None
+  selectAllTransitionsButton: Select all transitions
+  unselectTransitionsButton: Unselect transitions
   includeSubStateMachineText: Include Sub-Sutate Machines
-  confirmTitle: Confirm
+  confirmTitle: Transition Helper
   confirmContent: Are you sure you want to run it?
   answerYes: Yes
   answerNo: No
@@ -29,11 +35,12 @@ MonoBehaviour:
     the Animator Controller at once.
 
     Select the Animator Controller and the
-    target layer, then press the Setup button.'
+    target layers or transitions, then press the Setup button.'
   warnNeedsConditionOrExitTime: Transition needs at least one condition or an Exit
     Time to be valid, otherwise it will be ignored.
   infoSettingsMessage: You can change the default settings to the values that you
     specify in bulk
   errorMessage: Please select the animator controller to be executed
-  errorNeedsToSelectLayer: Select one or more layers
+  errorNeedsToSelectLayer: Please select at least one layer.
+  errorNeedsToSelectTransition: Please select at least one transition.
   logMessage: 'Transition Helper: The process has been completed.'
