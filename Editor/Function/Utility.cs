@@ -120,7 +120,6 @@ namespace dev.kesera2.transition_helper
             {
                 return null;
             }
-            // FIXME: 選択中のレイヤーに限定する <- 同じレイヤー名があると表示がバグる
             foreach (var layer in animatorController.layers)
             {
                 GetStateMachineInfo(destSourceTransitionPairs, layer.stateMachine);
