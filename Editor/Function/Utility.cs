@@ -7,7 +7,7 @@ using UnityEditor.Animations;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace TransitionHelper
+namespace dev.kesera2.transition_helper
 {
     internal static class Utility
     {

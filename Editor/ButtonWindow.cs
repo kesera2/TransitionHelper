@@ -2,9 +2,7 @@
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
-using UnityEditor.PackageManager.UI;
 using UnityEngine;
-using TransitionHelper;
 
 public class ButtonWindow : EditorWindow
 {

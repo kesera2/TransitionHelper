@@ -3,7 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace TransitionHelper
+namespace dev.kesera2.transition_helper
 {
     public class Localization : ScriptableSingleton<Localization>
     {

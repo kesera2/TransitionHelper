@@ -1,18 +1,21 @@
 ﻿using System;
 using UnityEditor;
 
-public sealed class LabelWidthScope : IDisposable
+namespace dev.kesera2.transition_helper
 {
-    private readonly float m_oldLabelWidth;
-
-    public LabelWidthScope(float labelWidth)
+    public sealed class LabelWidthScope : IDisposable
     {
-        m_oldLabelWidth = EditorGUIUtility.labelWidth;
-        EditorGUIUtility.labelWidth = labelWidth;
-    }
+        private readonly float m_oldLabelWidth;
 
-    public void Dispose()
-    {
-        EditorGUIUtility.labelWidth = m_oldLabelWidth;
+        public LabelWidthScope(float labelWidth)
+        {
+            m_oldLabelWidth = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = labelWidth;
+        }
+
+        public void Dispose()
+        {
+            EditorGUIUtility.labelWidth = m_oldLabelWidth;
+        }
     }
 }
