@@ -218,29 +218,40 @@ namespace dev.kesera2.transition_helper
         /// <param name="layer">対象のアニメーターコントローラーレイヤー</param>
         public static void SelectAllTransitions(AnimatorControllerLayer layer)
         {
-            var states = layer.stateMachine.states;
+            var states = layer.stateMachine;
             var transitions = new List<Object>();
-            transitions.AddRange(states.SelectMany(state => state.state.transitions));
-            foreach (var stateMachine in layer.stateMachine.stateMachines)
+            SelectRecursiveStateTransitions(transitions, states);
+            SelectRecursiveSubStateMachineTransitions(transitions, states);
+            Selection.objects = transitions.ToArray();
+        }
+
+        private static void SelectRecursiveStateTransitions(List<Object> transitions, AnimatorStateMachine parentStateMachine)
+        {
+            if (!parentStateMachine) return;
+            foreach (var state in parentStateMachine.states)
             {
-                var subStateTransitions = layer.stateMachine.GetStateMachineTransitions(stateMachine.stateMachine);
-                foreach (var transition in subStateTransitions)
+                foreach (var transition in state.state.transitions)
                 {
-                    if (transition.destinationState)
-                    {
-                        transitions.Add(transition);
-                    }
-                    else if (transition.destinationStateMachine)
-                    {
-                        transitions.Add(transition);
-                    }
-                    else if (transition.isExit)
-                    {
-                        transitions.Add(transition);
-                    }
+                    transitions.Add(transition);
+                    SelectRecursiveStateTransitions(transitions, transition.destinationStateMachine);
+                    SelectRecursiveSubStateMachineTransitions(transitions, transition.destinationStateMachine);
                 }
             }
-            Selection.objects = transitions.ToArray();
+        }
+
+        private static void SelectRecursiveSubStateMachineTransitions(List<Object> transitions,
+            AnimatorStateMachine parentStateMachine)
+        {
+            if (!parentStateMachine) return;
+            foreach (var stateMachine in parentStateMachine.stateMachines)
+            {
+                foreach (var transition in parentStateMachine.GetStateMachineTransitions(stateMachine.stateMachine))
+                {
+                    transitions.Add(transition);
+                    SelectRecursiveStateTransitions(transitions, transition.destinationStateMachine);
+                    SelectRecursiveSubStateMachineTransitions(transitions, transition.destinationStateMachine);
+                }
+            }
         }
 
         /// <summary>
