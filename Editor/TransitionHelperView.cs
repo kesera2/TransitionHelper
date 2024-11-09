@@ -400,6 +400,7 @@ namespace dev.kesera2.transition_helper
                 {
                     Localization.SelectedLanguage = _lastSelectedLanguage;
                     localization.Localize();
+                    _tabToggles = new List<string> { localization.Lang.layerSpecificationMode, localization.Lang.transitionSpecificationMode }.ToArray();
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -8,7 +9,8 @@ namespace dev.kesera2.transition_helper
     public class Localization : ScriptableSingleton<Localization>
     {
         public LanguageHash Lang { get; private set; }
-        public static LanguageEnum SelectedLanguage = LanguageEnum.日本語;
+        public string[] selectedMode;
+        public static LanguageEnum SelectedLanguage;
 
         // ローカライズ
         private const string LangAssetFolderPath = "Language/";
