@@ -201,7 +201,12 @@ namespace TransitionHelper
                     if (transition.destinationState != null)
                     {
                         sourceStateName = destSourceTransitionPairs[transition.destinationState.GetInstanceID()];
+                        // Debug.Log("transition instance ID :" + transition.GetInstanceID());
                         destStateName = transition.destinationState.name;
+                        if (sourceStateName == null)
+                        {
+                            Debug.Log("Null source state name");
+                        }
                     }
                     else if (transition.destinationStateMachine != null)
                     {
