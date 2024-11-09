@@ -38,7 +38,7 @@ namespace dev.kesera2.transition_helper
         private bool _executeButtonDisabled;                      // 実行ボタンの非活性の有無
         private bool _showTransitions = true;                     // 選択中のトランジションを表示するかどうか(Foldに使用）
         private readonly List<Tuple<string, MessageType>> _messages = new();              // メッセージ
-        private Localization localization;
+        private Localization _localization;
         private Localization.LanguageEnum _lastSelectedLanguage;
         
         [MenuItem("Tools/kesera2/" + ToolName)]
@@ -51,10 +51,10 @@ namespace dev.kesera2.transition_helper
 
         private void OnEnable()
         {
-            localization = ScriptableObject.CreateInstance<Localization>();
-            localization.Localize();
+            _localization = ScriptableObject.CreateInstance<Localization>();
+            _localization.Localize();
             _lastSelectedLanguage = Localization.SelectedLanguage;
-            _tabToggles = localization.GetSelecteMode();
+            _tabToggles = _localization.GetSelecteMode();
         }
 
         public void OnInspectorUpdate()
@@ -158,18 +158,18 @@ namespace dev.kesera2.transition_helper
             _destSourceTransitionPairs = Utility.GetDestSourceTransitionPairs(_animatorController); // ステート名辞書を取得
             using (new GUILayout.HorizontalScope())
             {
-                if (GUILayout.Button(localization.Lang.selectAllTransitionsButton))
+                if (GUILayout.Button(_localization.Lang.selectAllTransitionsButton))
                 {
                     Utility.SelectAllTransitions(Utility.GetSelectedLayer(_animatorController));
                 }
-                if (GUILayout.Button(localization.Lang.unselectTransitionsButton))
+                if (GUILayout.Button(_localization.Lang.unselectTransitionsButton))
                 {
                     Utility.UnselectTransitions();
                 }
             }
             EditorGUILayout.BeginVertical("box");
             // 選択中のトランジションのフォールドを表示（デフォルト表示）
-            _showTransitions = EditorGUILayout.Foldout(_showTransitions, string.Format(localization.Lang.selectedTransitionsCount, _selectedTransitionCount));
+            _showTransitions = EditorGUILayout.Foldout(_showTransitions, string.Format(_localization.Lang.selectedTransitionsCount, _selectedTransitionCount));
             // 遷移元 -> 遷移先のリストを描画
             DrawTransitionInfo();
             EditorGUILayout.EndVertical();
@@ -249,7 +249,7 @@ namespace dev.kesera2.transition_helper
             using (new EditorGUILayout.HorizontalScope())
             {
                 // すべてのチェックボックスをONにするボタン
-                if (GUILayout.Button(localization.Lang.toggleAll))
+                if (GUILayout.Button(_localization.Lang.toggleAll))
                 {
                     for (var i = 0; i < _layerEnabled.Length; i++)
                     {
@@ -258,7 +258,7 @@ namespace dev.kesera2.transition_helper
                 }
 
                 // すべてのチェックボックスをOFFにするボタン
-                if (!GUILayout.Button(localization.Lang.toggleNone)) return;
+                if (!GUILayout.Button(_localization.Lang.toggleNone)) return;
                 {
                     for (var i = 0; i < _layerEnabled.Length; i++)
                     {
@@ -273,7 +273,7 @@ namespace dev.kesera2.transition_helper
         /// </summary>
         private void DrawInformation()
         {
-            EditorGUILayout.HelpBox(localization.Lang.infoExplainMessage, MessageType.Info);
+            EditorGUILayout.HelpBox(_localization.Lang.infoExplainMessage, MessageType.Info);
         }
 
         /// <summary>
@@ -283,10 +283,10 @@ namespace dev.kesera2.transition_helper
         private bool DisplayConfirmDialog()
         {
             return EditorUtility.DisplayDialog(
-            localization.Lang.confirmTitle,
-            localization.Lang.confirmContent,
-            localization.Lang.answerYes,
-            localization.Lang.answerNo);
+            _localization.Lang.confirmTitle,
+            _localization.Lang.confirmContent,
+            _localization.Lang.answerYes,
+            _localization.Lang.answerNo);
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace dev.kesera2.transition_helper
             // アニメーターが選択されていないまたはレイヤーが1つも選択されていない場合、実行ボタンをDisable
             _executeButtonDisabled = IsAnimatorControllerEmpty() || !(IsSpecifiedLayerTab() && isLayerSelectedAtLeastOne()) && !IsSelectedTransitions() || HasErrorMessage();
             EditorGUI.BeginDisabledGroup(_executeButtonDisabled);
-            if (GUILayout.Button(localization.Lang.setupButtonText, GUILayout.Height(40)))
+            if (GUILayout.Button(_localization.Lang.setupButtonText, GUILayout.Height(40)))
             {
                 if (!DisplayConfirmDialog())
                 {
@@ -369,8 +369,8 @@ namespace dev.kesera2.transition_helper
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    _includeSubStateMachine = EditorGUILayout.ToggleLeft(localization.Lang.includeSubStateMachineText, _includeSubStateMachine);
-                    _writeDefaultsOff = EditorGUILayout.ToggleLeft(localization.Lang.writeDefaultsOffText, _writeDefaultsOff);
+                    _includeSubStateMachine = EditorGUILayout.ToggleLeft(_localization.Lang.includeSubStateMachineText, _includeSubStateMachine);
+                    _writeDefaultsOff = EditorGUILayout.ToggleLeft(_localization.Lang.writeDefaultsOffText, _writeDefaultsOff);
                 }
             }
         }
@@ -399,8 +399,8 @@ namespace dev.kesera2.transition_helper
                 if (Localization.SelectedLanguage != _lastSelectedLanguage)
                 {
                     Localization.SelectedLanguage = _lastSelectedLanguage;
-                    localization.Localize();
-                    _tabToggles = localization.GetSelecteMode();
+                    _localization.Localize();
+                    _tabToggles = _localization.GetSelecteMode();
                 }
             }
         }
@@ -410,8 +410,8 @@ namespace dev.kesera2.transition_helper
         /// </summary>
         private void DrawSettingsFoldOut()
         {
-            var labelWidth = Utility.GetNormalFontStyle().CalcSize(new GUIContent(localization.Lang.keepWriteDefaultsOfBlendTree)).x + SettingsLabelWidthOffset;
-            _showSettings = EditorGUILayout.Foldout(_showSettings, localization.Lang.settingsLabelText);
+            var labelWidth = Utility.GetNormalFontStyle().CalcSize(new GUIContent(_localization.Lang.keepWriteDefaultsOfBlendTree)).x + SettingsLabelWidthOffset;
+            _showSettings = EditorGUILayout.Foldout(_showSettings, _localization.Lang.settingsLabelText);
             if (!_showSettings) return;
             using (new LabelWidthScope(labelWidth))
             {
@@ -421,10 +421,10 @@ namespace dev.kesera2.transition_helper
             {
                 using (new EditorGUI.IndentLevelScope())
                 {
-                    _ignoreNoCondition = EditorGUILayout.ToggleLeft(localization.Lang.ignoreNoConditionText, _ignoreNoCondition);
+                    _ignoreNoCondition = EditorGUILayout.ToggleLeft(_localization.Lang.ignoreNoConditionText, _ignoreNoCondition);
                     if (!_ignoreNoCondition)
                     {
-                        EditorGUILayout.HelpBox(localization.Lang.warnNeedsConditionOrExitTime, MessageType.Warning);
+                        EditorGUILayout.HelpBox(_localization.Lang.warnNeedsConditionOrExitTime, MessageType.Warning);
                     }
                 }
             }
@@ -434,7 +434,7 @@ namespace dev.kesera2.transition_helper
                 _fixedDuration = EditorGUILayout.Toggle("Fixed Duration", _fixedDuration);
                 _transitionDuration = EditorGUILayout.IntField("Transition Duration", _transitionDuration);
                 _transitionOffset = EditorGUILayout.IntField("Transition Offset", _transitionOffset);
-                _keepWriteDefaultsOfBlendTree = EditorGUILayout.Toggle(localization.Lang.keepWriteDefaultsOfBlendTree, _keepWriteDefaultsOfBlendTree);
+                _keepWriteDefaultsOfBlendTree = EditorGUILayout.Toggle(_localization.Lang.keepWriteDefaultsOfBlendTree, _keepWriteDefaultsOfBlendTree);
             }
         }
 
@@ -517,28 +517,28 @@ namespace dev.kesera2.transition_helper
             _messages.Clear();
             if (IsAnimatorControllerEmpty())
             {
-                _messages.Add(Tuple.Create(localization.Lang.errorMessage, MessageType.Error));
+                _messages.Add(Tuple.Create(_localization.Lang.errorMessage, MessageType.Error));
             }
             else if (IsSpecifiedLayerTab())
             {
                 if (!isLayerSelectedAtLeastOne())
                 {
-                    _messages.Add(Tuple.Create(localization.Lang.errorNeedsToSelectLayer, MessageType.Error));
+                    _messages.Add(Tuple.Create(_localization.Lang.errorNeedsToSelectLayer, MessageType.Error));
                 }
             }
             else if (IsSpecifiedTransitionTab())
             {
                 if (!IsSelectedTransitions())
                 {
-                    _messages.Add(Tuple.Create(localization.Lang.errorNeedsToSelectTransition, MessageType.Error));
+                    _messages.Add(Tuple.Create(_localization.Lang.errorNeedsToSelectTransition, MessageType.Error));
                 }
                 else if (IsStateTransitionSelected() && IsStateMachineTransitionSelected())
                 {
-                    _messages.Add(Tuple.Create(localization.Lang.warnStateMachineTransitionSelected, MessageType.Warning));
+                    _messages.Add(Tuple.Create(_localization.Lang.warnStateMachineTransitionSelected, MessageType.Warning));
                 }
                 else if (IsStateMachineTransitionSelected())
                 {
-                    _messages.Add(Tuple.Create(localization.Lang.errorNeedsToSelectStateTransition, MessageType.Error));
+                    _messages.Add(Tuple.Create(_localization.Lang.errorNeedsToSelectStateTransition, MessageType.Error));
                 }
             }
         }
