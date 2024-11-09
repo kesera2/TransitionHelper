@@ -68,5 +68,12 @@ namespace dev.kesera2.transition_helper
                     break;
             }
         }
+
+        public string[] GetSelecteMode()
+        {
+            // _tabToggles = new[] { localization.Lang.layerSpecificationMode, localization.Lang.transitionSpecificationMode };
+
+            return new[] { Lang.layerSpecificationMode, Lang.transitionSpecificationMode };
+        }
     }
 }
