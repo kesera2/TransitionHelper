@@ -1,6 +1,6 @@
 {
   "name": "dev.kesera2.transition-helper",
-  "version": "2.0.0-beta1",
+  "version": "2.0.0-beta2",
   "displayName": "Transition Helper",
   "description": "Config Transition and State options in Animator Window",
   "author": {
