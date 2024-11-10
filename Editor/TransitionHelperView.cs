@@ -174,16 +174,16 @@ namespace TransitionHelper
             selectedStateMachineTransitions = Selection.objects.OfType<AnimatorTransition>().Where(t => t != null).ToArray(); // 選択中サブステートマシンのトランジション
             selectedTransitionCount = selectedStateTransitions.Length + selectedStateMachineTransitions.Length; // 選択中のトランジションの数を合算
             destSourceTransitionPairs = Utility.GetDestSourceTransitionPairs(animatorController); // ステート名辞書を取得
-            GUILayout.Label(string.Format(Localization.lang.selectedLayer, Utility.getSelectedLayerName(animatorController))); // 選択中のレイヤーラベル
+            GUILayout.Label(string.Format(Localization.lang.selectedLayer, Utility.GetSelectedLayerName(animatorController))); // 選択中のレイヤーラベル
             using (new GUILayout.HorizontalScope())
             {
                 if (GUILayout.Button(Localization.lang.selectAllTransitionsButton))
                 {
-                    Utility.selectAllTransitions(Utility.getSelectedLayer(animatorController));
+                    Utility.SelectAllTransitions(Utility.GetSelectedLayer(animatorController));
                 }
                 if (GUILayout.Button(Localization.lang.unselectTransitionsButton))
                 {
-                    Utility.unselectTransitions();
+                    Utility.UnselectTransitions();
                 }
             }
             EditorGUILayout.BeginVertical("box");
@@ -419,7 +419,7 @@ namespace TransitionHelper
         /// </summary>
         private void DrawSettingsFoldOut()
         {
-            float labelWidth = Utility.GetNomalFontStyle().CalcSize(new GUIContent(Localization.lang.keepWriteDefaultsOfBlendTree)).x + SETTINGS_LABEL_WIDTH_OFFSET;
+            float labelWidth = Utility.GetNormalFontStyle().CalcSize(new GUIContent(Localization.lang.keepWriteDefaultsOfBlendTree)).x + SETTINGS_LABEL_WIDTH_OFFSET;
             showSettings = EditorGUILayout.Foldout(showSettings, Localization.lang.settingsLabelText);
             if (showSettings)
             {

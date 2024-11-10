@@ -17,7 +17,7 @@ namespace TransitionHelper
         /// <param name="stateMachine">対象のアニメーターステートマシン</param>
         /// <param name="parentPath">親ステートのパス</param>
         /// <returns>親ステートのパス</returns>
-        public static string GetParentPath(AnimatorStateMachine stateMachine, string parentPath)
+        private static string GetParentPath(AnimatorStateMachine stateMachine, string parentPath)
         {
             if (!string.IsNullOrEmpty(parentPath))
             {
@@ -32,12 +32,9 @@ namespace TransitionHelper
         /// </summary>
         /// <param name="stateMachine">対象のアニメーターステートマシン</param>
         /// <param name="result">結果を格納するリスト</param>
-        public static void AddState(AnimatorStateMachine stateMachine, List<UnityEditor.Animations.AnimatorState> result)
+        private static void AddState(AnimatorStateMachine stateMachine, List<AnimatorState> result)
         {
-            foreach (var state in stateMachine.states)
-            {
-                result.Add(state.state);
-            }
+            result.AddRange(stateMachine.states.Select(state => state.state));
         }
 
         /// <summary>
@@ -45,12 +42,9 @@ namespace TransitionHelper
         /// </summary>
         /// <param name="stateMachine">対象のアニメーターステートマシン</param>
         /// <param name="result">結果を格納するリスト</param>
-        public static void AddTransition(AnimatorStateMachine stateMachine, List<AnimatorStateTransition[]> result)
+        private static void AddTransition(AnimatorStateMachine stateMachine, List<AnimatorStateTransition[]> result)
         {
-            foreach (var state in stateMachine.states)
-            {
-                result.Add(state.state.transitions);
-            }
+            result.AddRange(stateMachine.states.Select(state => state.state.transitions));
         }
 
         /// <summary>
@@ -59,7 +53,7 @@ namespace TransitionHelper
         /// <param name="stateMachine">対象のアニメーターステートマシン</param>
         /// <param name="parentPath">ステートの親パス</param>
         /// <param name="result">結果を格納するリスト</param>
-        public static void GetAllStates(AnimatorStateMachine stateMachine, string parentPath, List<UnityEditor.Animations.AnimatorState> result)
+        public static void GetAllStates(AnimatorStateMachine stateMachine, string parentPath, List<AnimatorState> result)
         {
             parentPath = GetParentPath(stateMachine, parentPath);
 
@@ -105,10 +99,12 @@ namespace TransitionHelper
         }
 
         // スタイルを取得
-        public static GUIStyle GetNomalFontStyle()
+        public static GUIStyle GetNormalFontStyle()
         {
-            GUIStyle style = new GUIStyle();
-            style.fontStyle = FontStyle.Normal;
+            var style = new GUIStyle
+            {
+                fontStyle = FontStyle.Normal
+            };
             return style;
         }
 
@@ -119,20 +115,16 @@ namespace TransitionHelper
         /// <returns>遷移先のステート名をキーにインスタンスIDをバリューにした辞書</returns>
         public static Dictionary<int, string> GetDestSourceTransitionPairs(AnimatorController animatorController)
         {
-            Dictionary<int, string> destSourceTransitionPairs = new Dictionary<int, string>();
+            var destSourceTransitionPairs = new Dictionary<int, string>();
             if (!animatorController)
             {
                 return null;
             }
-            List<AnimatorControllerLayer> layers = animatorController.layers.ToList();
-
             // FIXME: 選択中のレイヤーに限定する <- 同じレイヤー名があると表示がバグる
-            foreach (AnimatorControllerLayer layer in layers)
+            foreach (var layer in animatorController.layers)
             {
-                // ステートマシンからサブステートマシンへ
                 GetStateMachineInfo(destSourceTransitionPairs, layer.stateMachine);
                 GetSubStateMachineInfo(destSourceTransitionPairs, layer.stateMachine);
-                
             }
             return destSourceTransitionPairs;
         }
@@ -224,27 +216,21 @@ namespace TransitionHelper
         /// 指定したアニメーターコントローラーレイヤー内のすべてのトランジションを選択します。
         /// </summary>
         /// <param name="layer">対象のアニメーターコントローラーレイヤー</param>
-        public static void selectAllTransitions(AnimatorControllerLayer layer)
+        public static void SelectAllTransitions(AnimatorControllerLayer layer)
         {
             var states = layer.stateMachine.states;
-            List<Object> transitions = new List<Object>();
-            foreach (var state in states)
+            var transitions = new List<Object>();
+            transitions.AddRange(states.SelectMany(state => state.state.transitions));
+            foreach (var stateMachine in layer.stateMachine.stateMachines)
             {
-                foreach (var transition in state.state.transitions)
+                var subStateTransitions = layer.stateMachine.GetStateMachineTransitions(stateMachine.stateMachine);
+                foreach (var transition in subStateTransitions)
                 {
-                    transitions.Add(transition);
-                }
-            }
-            foreach (ChildAnimatorStateMachine stateMachine in layer.stateMachine.stateMachines)
-            {
-                AnimatorTransition[] subStateTransitions = layer.stateMachine.GetStateMachineTransitions(stateMachine.stateMachine);
-                foreach (AnimatorTransition transition in subStateTransitions)
-                {
-                    if (transition.destinationState != null)
+                    if (transition.destinationState)
                     {
                         transitions.Add(transition);
                     }
-                    else if (transition.destinationStateMachine != null)
+                    else if (transition.destinationStateMachine)
                     {
                         transitions.Add(transition);
                     }
@@ -260,9 +246,9 @@ namespace TransitionHelper
         /// <summary>
         /// 指定したアニメーターコントローラーレイヤー内のトランジションの選択を解除します。
         /// </summary>
-        public static void unselectTransitions()
+        public static void UnselectTransitions()
         {
-            AnimatorTransition[] transition = new AnimatorTransition[0];
+            var transition = Array.Empty<Object>();
             Selection.objects = transition;
         }
 
@@ -270,14 +256,14 @@ namespace TransitionHelper
         /// 選択中のレイヤーのインデックスを取得します。
         /// </summary>
         /// <returns>選択中のレイヤーのインデックス</returns>
-        public static int getSelectedLayerIndex()
+        private static int GetSelectedLayerIndex()
         {
             // NOTE: Reflectionを使ってEditorWindowクラスのプロパティからレイヤーのインデックスを取得
             var asm = Assembly.Load("UnityEditor.Graphs");
             var editorGraphModule = asm.GetModule("UnityEditor.Graphs.dll");
             var typeAnimatorWindow = editorGraphModule.GetType("UnityEditor.Graphs.AnimatorControllerTool");
             var animatorWindow = EditorWindow.GetWindow(typeAnimatorWindow);
-            var selectedLayerIndex = typeAnimatorWindow.GetProperty("selectedLayerIndex").GetValue(animatorWindow);
+            var selectedLayerIndex = typeAnimatorWindow.GetProperty("selectedLayerIndex")!.GetValue(animatorWindow);
             return (int)selectedLayerIndex;
         }
 
@@ -286,9 +272,9 @@ namespace TransitionHelper
         /// </summary>
         /// <param name="animatorController">対象のアニメーターコントローラー</param>
         /// <returns>選択中のレイヤー</returns>
-        public static AnimatorControllerLayer getSelectedLayer(AnimatorController animatorController)
+        public static AnimatorControllerLayer GetSelectedLayer(AnimatorController animatorController)
         {
-            return animatorController.layers[getSelectedLayerIndex()];
+            return animatorController.layers[GetSelectedLayerIndex()];
         }
 
         /// <summary>
@@ -296,9 +282,9 @@ namespace TransitionHelper
         /// </summary>
         /// <param name="animatorController">対象のアニメーターコントローラー</param>
         /// <returns>選択中のレイヤーの名前</returns>
-        public static string getSelectedLayerName(AnimatorController animatorController)
+        public static string GetSelectedLayerName(AnimatorController animatorController)
         {
-            return getSelectedLayer(animatorController).name;
+            return GetSelectedLayer(animatorController).name;
         }
 
         /// <summary>
@@ -306,18 +292,18 @@ namespace TransitionHelper
         /// </summary>
         public static void SaveChanges()
         {
-            Debug.Log(Localization.lang.logMessage);
+            // Debug.Log(Localization.lang.logMessage);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
 
         // デバッグ用
-        private static void ForDebug(Dictionary<int, string> destSourceTransitionPairs)
-        {
-            foreach (KeyValuePair<int, string> kvp in destSourceTransitionPairs)
-            {
-                Debug.Log(string.Format("Key: {0}, Value: {1}", kvp.Key, kvp.Value));
-            }
-        }
+        // private static void ForDebug(Dictionary<int, string> destSourceTransitionPairs)
+        // {
+        //     foreach (var kvp in destSourceTransitionPairs)
+        //     {
+        //         Debug.Log(string.Format("Key: {0}, Value: {1}", kvp.Key, kvp.Value));
+        //     }
+        // }
     }
 }
