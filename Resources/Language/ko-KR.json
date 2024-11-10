@@ -2,7 +2,7 @@
     "layerSpecificationMode": "계층 규격 모드",
     "transitionSpecificationMode": "전환 사양 모드",
     "settingsLabelText": "설정",
-    "ignoreNoConditionText": "전이 조건의 지정이 없는 트랜지션에 대해서는 변경하지 않는다",
+    "ignoreNoConditionText": "전이 조건의 지정이 없는 트랜지션에 대해서는 Has Exit Time을 변경하지 않는다",
     "writeDefaultsOffText": "쓰기 기본값 사용 안 함",
     "keepWriteDefaultsOfBlendTree": "BlendTree의 WriteDefaults 상태를 유지한다.",
     "selectedLayer": "계층 이름: {0}",
@@ -26,5 +26,5 @@
     "warnStateMachineTransitionSelected": "서브스테이트 머신에서의 트랜지션 설정은 변경할 수 없습니다.\n유효한 트랜지션을 선택해 주세요.",
     "errorNeedsToSelectStateTransition": "유효한 트랜지션을 선택해 주세요 ",
     "errorInvalidTransitionSelected": "지정한 애니메이터 컨트롤러 이외의 트랜지션이 선택되어 있습니다.\n지정한 Animator Controller를 Animator 창에서 다시 여십시오.",
-    "logMessage": "Transition Helper: 처리 완료되었습니다"
+    "completeMessage": "처리 완료되었습니다"
 }

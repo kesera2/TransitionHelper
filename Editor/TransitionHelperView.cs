@@ -353,6 +353,14 @@ namespace dev.kesera2.transition_helper
                 Localization.S("answerNo"));
         }
 
+        private void DisplayComplete()
+        {
+            EditorUtility.DisplayDialog(
+                Localization.S("confirmTitle"),
+                Localization.S("completeMessage"),
+                "OK");
+        }
+
         /// <summary>
         /// 実行ボタンの描画を行うためのメソッドです。
         /// </summary>
@@ -383,6 +391,7 @@ namespace dev.kesera2.transition_helper
 
                 // 変更を保存する
                 Utility.SaveChanges();
+                DisplayComplete();
             }
 
             EditorGUI.EndDisabledGroup();

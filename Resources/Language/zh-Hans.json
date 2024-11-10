@@ -2,7 +2,7 @@
   "layerSpecificationMode": "图层规格模式",
   "transitionSpecificationMode": "过渡规格模式",
   "settingsLabelText": "设置",
-  "ignoreNoConditionText": "对于没有指定过渡条件的过渡，不做任何改变。",
+  "ignoreNoConditionText": "对于未指定转移条件的转换，不变更Has Exit Time",
   "writeDefaultsOffText": "关掉写入默认值",
   "keepWriteDefaultsOfBlendTree": "保持 BlendTree WriteDefaults 状态",
   "selectedLayer": "层名 : {0}",
@@ -26,5 +26,5 @@
   "warnStateMachineTransitionSelected": "无法更改子状态机的转换设置。\n请选择 ߋn 有效的过渡。",
   "errorNeedsToSelectStateTransition": "选择有效的过渡",
   "errorInvalidTransitionSelected": "选择了指定 AnimatorController 以外的过渡。\n请重新打开您在 Animator 窗口中指定的 AnimatorController。",
-  "logMessage": "Transition Helper: 处理已完成。"
+  "completeMessage": "处理已完成。"
 }

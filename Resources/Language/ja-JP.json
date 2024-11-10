@@ -2,7 +2,7 @@
     "layerSpecificationMode": "レイヤー指定モード",
     "transitionSpecificationMode": "トランジション指定モード",
     "settingsLabelText": "設定",
-    "ignoreNoConditionText": "遷移条件の指定のないトランジションについては変更しない",
+    "ignoreNoConditionText": "遷移条件の指定のないトランジションについてはHas Exit Timeを変更しない",
     "writeDefaultsOffText": "Write DefaultsをOFFにする",
     "keepWriteDefaultsOfBlendTree": "BlendTreeのWriteDefaults状態を保持する",
     "selectedLayer": "レイヤー名 : {0}",
@@ -26,5 +26,5 @@
     "warnStateMachineTransitionSelected": "選択中のトランジションの一部にサブステートマシンのトランジションが含まれています。",
     "errorNeedsToSelectStateTransition": "サブステートマシンからのトランジションの設定は変更できません。\n有効なトランジションを選択してください。",
     "errorInvalidTransitionSelected": "指定したアニメーターコントローラー以外のトランジションが選択されています。\n指定したAnimatorControllerをAnimatorウィンドウで開き直してください。",
-    "logMessage": "Transition Helper: 処理が完了しました。"
+    "completeMessage": "処理が完了しました。"
 }
