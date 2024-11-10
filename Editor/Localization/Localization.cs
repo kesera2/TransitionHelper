@@ -29,10 +29,9 @@ namespace dev.kesera2.transition_helper
         public static readonly ImmutableList<string>
             SupportedLanguages = new string[] { "ja-JP", "en-US", "zh-Hans", "ko-KR" }.ToImmutableList();
 
-        public static readonly string[] DisplayNames = SupportedLanguages.Select(l =>
-        {
-            return CollectionExtensions.GetValueOrDefault(SupportedLanguageDisplayNames, l, l);
-        }).ToArray();
+        public static readonly string[] DisplayNames = SupportedLanguages
+            .Select(l => SupportedLanguageDisplayNames.TryGetValue(l, out var displayName) ? displayName : l)
+            .ToArray();
 
         static Localization()
         {
