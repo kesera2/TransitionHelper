@@ -2,7 +2,7 @@
   "layerSpecificationMode": "Layer Specification Mode",
   "transitionSpecificationMode": "Transition Specification Mode",
   "settingsLabelText": "Settings",
-  "ignoreNoConditionText": "No change is made for transitions for which no transition conditions are specified.",
+  "ignoreNoConditionText": "Has Exit Time is not changed for transitions for which no transition condition is specified.",
   "writeDefaultsOffText": "Turn off Write Defaults",
   "keepWriteDefaultsOfBlendTree": "Keep Write Defaults Of Blend Tree",
   "selectedLayer": "Layer name : {0}",

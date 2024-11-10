@@ -2,7 +2,7 @@
     "layerSpecificationMode": "レイヤー指定モード",
     "transitionSpecificationMode": "トランジション指定モード",
     "settingsLabelText": "設定",
-    "ignoreNoConditionText": "遷移条件の指定のないトランジションについては変更しない",
+    "ignoreNoConditionText": "遷移条件の指定のないトランジションについてはHas Exit Timeを変更しない",
     "writeDefaultsOffText": "Write DefaultsをOFFにする",
     "keepWriteDefaultsOfBlendTree": "BlendTreeのWriteDefaults状態を保持する",
     "selectedLayer": "レイヤー名 : {0}",

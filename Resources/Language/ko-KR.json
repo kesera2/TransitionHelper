@@ -2,7 +2,7 @@
     "layerSpecificationMode": "계층 규격 모드",
     "transitionSpecificationMode": "전환 사양 모드",
     "settingsLabelText": "설정",
-    "ignoreNoConditionText": "전이 조건의 지정이 없는 트랜지션에 대해서는 변경하지 않는다",
+    "ignoreNoConditionText": "전이 조건의 지정이 없는 트랜지션에 대해서는 Has Exit Time을 변경하지 않는다",
     "writeDefaultsOffText": "쓰기 기본값 사용 안 함",
     "keepWriteDefaultsOfBlendTree": "BlendTree의 WriteDefaults 상태를 유지한다.",
     "selectedLayer": "계층 이름: {0}",
