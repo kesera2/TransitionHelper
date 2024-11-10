@@ -40,7 +40,7 @@ namespace dev.kesera2.transition_helper
         private int _selectedTransitionCount; // 選択中のトランジションの数
         private bool _executeButtonDisabled; // 実行ボタンの非活性の有無
         private bool _showTransitions = true; // 選択中のトランジションを表示するかどうか(Foldに使用）
-        private readonly List<Tuple<string, MessageType>> _messages = new(); // メッセージ
+        private readonly List<Tuple<string, MessageType>> _messages =  new List<Tuple<string, MessageType>>(); // メッセージ
         private int _lastSelectedLanguage;
         private bool IsInvalidTransitionSelected;
 

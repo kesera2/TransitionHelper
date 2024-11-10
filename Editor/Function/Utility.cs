@@ -212,7 +212,10 @@ namespace dev.kesera2.transition_helper
 
                     if (instanceId != 0)
                     {
-                        destSourceTransitionPairs.TryAdd(instanceId, stateMachineName);
+                        if (!destSourceTransitionPairs.ContainsKey(instanceId))
+                        {
+                            destSourceTransitionPairs[instanceId] = stateMachineName;
+                        }
                     }
                 }
             }
