@@ -108,7 +108,7 @@ namespace dev.kesera2.transition_helper
         {
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            _logo = Resources.Load<Texture2D>("Icon/Logo");
+            _logo = Resources.Load<Texture2D>("Icon/Transition_Helper_Logo");
             EditorGUILayout.LabelField(new GUIContent(_logo), GUILayout.Height(100), GUILayout.Width(400));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
