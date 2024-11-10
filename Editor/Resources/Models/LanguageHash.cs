@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
-namespace TransitionHelper
-{
+namespace dev.kesera2.transition_helper{
     [CreateAssetMenu(menuName = "TransitionHelper/LaguageData")]
     public class LanguageHash : ScriptableObject
     {

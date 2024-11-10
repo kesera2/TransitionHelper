@@ -4,8 +4,8 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
-// Copyright (c) 2023 kesera2
-namespace TransitionHelper
+// Copyright (c) 2023-2024 kesera2
+namespace dev.kesera2.transition_helper
 {
     /// <summary>
     /// TransitionHelperViewクラスは、UnityのEditorWindowを拡張してトランジションの操作を補助するためのウィンドウを提供します。
