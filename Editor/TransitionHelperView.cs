@@ -188,7 +188,7 @@ namespace dev.kesera2.transition_helper
             EditorGUILayout.BeginVertical("box");
             // 選択中のトランジションのフォールドを表示（デフォルト表示）
             _showTransitions = EditorGUILayout.Foldout(_showTransitions,
-                string.Format(Localization.S(","), _selectedTransitionCount));
+                string.Format(Localization.S("selectedTransitionsCount"), _selectedTransitionCount));
             // 遷移元 -> 遷移先のリストを描画
             DrawTransitionInfo();
             EditorGUILayout.EndVertical();
