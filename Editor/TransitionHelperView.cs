@@ -12,35 +12,36 @@ namespace dev.kesera2.transition_helper
     /// </summary>
     public class TransitionHelperView : EditorWindow
     {
-        private static Texture2D _logo;                          // ロゴのテクスチャ
-        private Vector2 _scrollPosition = Vector2.zero;         // スクロール位置
-        private AnimatorController _animatorController;          // アニメーターコントローラー指定時のAnimatorController
-        private bool[] _layerEnabled = { };                      // 有効状態のレイヤー
-        private bool _includeSubStateMachine = true;                     // サブステートマシンのチェックボックスの有効状態
-        private bool _ignoreNoCondition = true;                          // Conditionsの指定のないHasExitTimeの設定を無視する
-        private bool _writeDefaultsOff = true;                           // 設定
-        private bool _showSettings;                              // 設定を表示するかどうか
-        private bool _hasExitTime;                               // トランジションに出口時間があるかどうか
-        private float _exitTime;                                     // 遷移終了時間（0から1の範囲）
-        private bool _fixedDuration = true;                              // トランジションの固定時間を使用するかどうか
-        private int _transitionDuration;                             // トランジションの固定時間（ミリ秒）
-        private int _transitionOffset;                               // トランジションのオフセット時間（ミリ秒）
-        private bool _keepWriteDefaultsOfBlendTree = true;               // Blend Treeのデフォルト値を保持するかどうか
-        private const float SettingsLabelWidthOffset = 10f;  // 設定のラベルとコンテンツの間の空欄の幅
-        private string[] _tabToggles;                           // Tabの表示名
-        private int _tabIndex;                                  // 選択中のTab
-        private AnimatorStateTransition[] _selectedStateTransitions;     // ステートからのトランジション
-        private AnimatorTransition[] _selectedStateMachineTransitions;   // ステートマシンからのトランジション
-        private Dictionary<int, string> _destSourceTransitionPairs;      // ステートのインスタンスIDとトランジションを紐付ける辞書
-        private int _selectedTransitionCount;                // 選択中のトランジションの数
-        private bool _executeButtonDisabled;                     // 実行ボタンの非活性の有無
-        bool _showTransitions = true;                            // 選択中のトランジションを表示するかどうか(Foldに使用）
+        private const string ToolName = "Transition Helper";      // ツール名
+        private static Texture2D _logo;                           // ロゴのテクスチャ
+        private Vector2 _scrollPosition = Vector2.zero;           // スクロール位置
+        private AnimatorController _animatorController;           // アニメーターコントローラー指定時のAnimatorController
+        private bool[] _layerEnabled = { };                       // 有効状態のレイヤー
+        private bool _includeSubStateMachine = true;              // サブステートマシンのチェックボックスの有効状態
+        private bool _ignoreNoCondition = true;                   // Conditionsの指定のないHasExitTimeの設定を無視する
+        private bool _writeDefaultsOff = true;                    // 設定
+        private bool _showSettings;                               // 設定を表示するかどうか
+        private bool _hasExitTime;                                // トランジションに出口時間があるかどうか
+        private float _exitTime;                                  // 遷移終了時間（0から1の範囲）
+        private bool _fixedDuration = true;                       // トランジションの固定時間を使用するかどうか
+        private int _transitionDuration;                          // トランジションの固定時間（ミリ秒）
+        private int _transitionOffset;                            // トランジションのオフセット時間（ミリ秒）
+        private bool _keepWriteDefaultsOfBlendTree = true;        // Blend Treeのデフォルト値を保持するかどうか
+        private const float SettingsLabelWidthOffset = 10f;       // 設定のラベルとコンテンツの間の空欄の幅
+        private string[] _tabToggles;                             // Tabの表示名
+        private int _tabIndex;                                    // 選択中のTab
+        private AnimatorStateTransition[] _selectedStateTransitions; // ステートからのトランジション
+        private AnimatorTransition[] _selectedStateMachineTransitions; // ステートマシンからのトランジション
+        private Dictionary<int, string> _destSourceTransitionPairs; // ステートのインスタンスIDとトランジションを紐付ける辞書
+        private int _selectedTransitionCount;                     // 選択中のトランジションの数
+        private bool _executeButtonDisabled;                      // 実行ボタンの非活性の有無
+        private bool _showTransitions = true;                     // 選択中のトランジションを表示するかどうか(Foldに使用）
 
-        [MenuItem("Tools/もちもちまーと/Transition Helper")]
+        [MenuItem("Tools/kesera2/" + ToolName)]
         public static void OpenWindow()
         {
             var window = GetWindow<TransitionHelperView>();
-            window.titleContent = new GUIContent("Transition Helper");
+            window.titleContent = new GUIContent(ToolName);
             window.Show();
         }
 
