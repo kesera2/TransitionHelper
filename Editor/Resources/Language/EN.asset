@@ -43,4 +43,7 @@ MonoBehaviour:
   errorMessage: Please select the animator controller to be executed
   errorNeedsToSelectLayer: Please select at least one layer.
   errorNeedsToSelectTransition: Please select at least one transition.
+  warnStateMachineTransitionSelected: Some of the transitions being selected include
+    sub-state machine transitions.
+  errorNeedsToSelectStateTransition: Select valid transitions
   logMessage: 'Transition Helper: The process has been completed.'
