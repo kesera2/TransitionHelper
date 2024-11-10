@@ -118,10 +118,7 @@ namespace TransitionHelper
                 // AnimatorControllerに設定されているレイヤーの名前をチェックボックスとして表示する
                 if (_layerEnabled != null && _layerEnabled.Length == _animatorController.layers.Length) return;
                 _layerEnabled = new bool[_animatorController.layers.Length];
-                for (var i = 0; i < _animatorController.layers.Length; i++)
-                {
-                    _layerEnabled[i] = false; // デフォルトはアンチェック
-                }
+                _layerEnabled = _animatorController.layers.Select(_ => false).ToArray(); // デフォルトはアンチェック
             }
         }
 
@@ -200,7 +197,7 @@ namespace TransitionHelper
                 }
             }
             // サブステートマシンの遷移元 -> 遷移先のリストを描画
-            foreach (AnimatorTransition transition in _selectedStateMachineTransitions)
+            foreach (var transition in _selectedStateMachineTransitions)
             {
                 var sourceStateName = string.Empty;
                 var destStateName = string.Empty;
