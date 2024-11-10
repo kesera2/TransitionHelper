@@ -23,7 +23,8 @@
     "errorMessage": "アニメーターコントローラーを指定してください",
     "errorNeedsToSelectLayer": "レイヤーを1つ以上選択してください。",
     "errorNeedsToSelectTransition": "トランジションを1つ以上選択してください。",
-    "warnStateMachineTransitionSelected": "選択中のトランジションの一部にサブステートマシンのトランジションが含まれています",
-    "errorNeedsToSelectStateTransition": "有効なトランジションを選択してください",
+    "warnStateMachineTransitionSelected": "選択中のトランジションの一部にサブステートマシンのトランジションが含まれています。",
+    "errorNeedsToSelectStateTransition": "サブステートマシンからのトランジションの設定は変更できません。\n有効なトランジションを選択してください。",
+    "errorInvalidTransitionSelected": "指定したアニメーターコントローラー以外のトランジションが選択されています。\n指定したAnimatorControllerをAnimatorウィンドウで開き直してください。",
     "logMessage": "Transition Helper: 処理が完了しました。"
 }

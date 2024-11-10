@@ -42,7 +42,7 @@ namespace dev.kesera2.transition_helper
         private bool _showTransitions = true; // 選択中のトランジションを表示するかどうか(Foldに使用）
         private readonly List<Tuple<string, MessageType>> _messages = new(); // メッセージ
         private int _lastSelectedLanguage;
-
+        private bool IsInvalidTransitionSelected;
 
         [MenuItem("Tools/kesera2/" + ToolName)]
         public static void OpenWindow()
@@ -91,6 +91,8 @@ namespace dev.kesera2.transition_helper
             else if (IsSpecifiedTransitionTab())
             {
                 DrawTransitionMenu();
+                // 遷移元 -> 遷移先のリストを描画
+                DrawTransitionInfo();
             }
 
             DrawErrorBox();
@@ -188,33 +190,55 @@ namespace dev.kesera2.transition_helper
             EditorGUILayout.BeginVertical("box");
             // 選択中のトランジションのフォールドを表示（デフォルト表示）
             _showTransitions = EditorGUILayout.Foldout(_showTransitions,
-                string.Format(Localization.S(","), _selectedTransitionCount));
-            // 遷移元 -> 遷移先のリストを描画
-            DrawTransitionInfo();
+                string.Format(Localization.S("selectedTransitionsCount"), _selectedTransitionCount));
+
             EditorGUILayout.EndVertical();
         }
 
+        private bool CheckIsInvalidTransition( int instanceID)
+        {
+            if (_destSourceTransitionPairs.ContainsKey(instanceID)) return false;
+            IsInvalidTransitionSelected = true;
+            EditorGUI.indentLevel = 0;
+            return true;
+        }
+        
         private void DrawTransitionInfo()
         {
             if (!_showTransitions) return;
             EditorGUI.indentLevel++;
+
+            IsInvalidTransitionSelected = false;
             // ステートマシンの遷移元 -> 遷移先のリストを描画
             foreach (var transition in _selectedStateTransitions)
             {
                 var sourceStateName = string.Empty;
                 var destStateName = string.Empty;
+                
                 if (transition.destinationState)
                 {
+                    if (CheckIsInvalidTransition(transition.destinationState.GetInstanceID()))
+                    {
+                        return;
+                    }
                     sourceStateName = _destSourceTransitionPairs[transition.destinationState.GetInstanceID()];
                     destStateName = transition.destinationState.name;
                 }
                 else if (transition.destinationStateMachine)
                 {
+                    if (CheckIsInvalidTransition(transition.destinationStateMachine.GetInstanceID()))
+                    {
+                        return;
+                    }
                     sourceStateName = _destSourceTransitionPairs[transition.destinationStateMachine.GetInstanceID()];
                     destStateName = transition.destinationStateMachine.name;
                 }
                 else if (transition.isExit)
                 {
+                    if (CheckIsInvalidTransition(transition.GetInstanceID()))
+                    {
+                        return;
+                    }
                     sourceStateName = _destSourceTransitionPairs[transition.GetInstanceID()];
                     destStateName = "Exit";
                 }
@@ -234,11 +258,19 @@ namespace dev.kesera2.transition_helper
                 {
                     if (transition.destinationState)
                     {
+                        if (CheckIsInvalidTransition(transition.destinationState.GetInstanceID()))
+                        {
+                            return;
+                        }
                         sourceStateName = _destSourceTransitionPairs[transition.destinationState.GetInstanceID()];
                         destStateName = transition.destinationState.name;
                     }
                     else if (transition.destinationStateMachine)
                     {
+                        if (CheckIsInvalidTransition(transition.destinationStateMachine.GetInstanceID()))
+                        {
+                            return;
+                        }
                         sourceStateName =
                             _destSourceTransitionPairs[transition.destinationStateMachine.GetInstanceID()];
                         destStateName = transition.destinationStateMachine.name;
@@ -246,11 +278,19 @@ namespace dev.kesera2.transition_helper
                 }
                 else if (transition.destinationStateMachine)
                 {
+                    if (CheckIsInvalidTransition(transition.destinationStateMachine.GetInstanceID()))
+                    {
+                        return;
+                    }
                     sourceStateName = _destSourceTransitionPairs[transition.destinationStateMachine.GetHashCode()];
                     destStateName = transition.destinationStateMachine.name;
                 }
                 else if (transition.isExit)
                 {
+                    if (CheckIsInvalidTransition(transition.GetInstanceID()))
+                    {
+                        return;
+                    }
                     sourceStateName = _destSourceTransitionPairs[transition.GetInstanceID()];
                     destStateName = "Exit";
                 }
@@ -577,6 +617,11 @@ namespace dev.kesera2.transition_helper
                 if (!IsSelectedTransitions())
                 {
                     _messages.Add(Tuple.Create(Localization.S("errorNeedsToSelectTransition"), MessageType.Error));
+                }
+                else if (IsInvalidTransitionSelected)
+                {
+                    _messages.Add(Tuple.Create(Localization.S("errorInvalidTransitionSelected"),
+                        MessageType.Error));
                 }
                 else if (IsStateTransitionSelected() && IsStateMachineTransitionSelected())
                 {

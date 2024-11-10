@@ -17,13 +17,14 @@
   "confirmContent": "确定要运行吗？",
   "answerYes": "是的",
   "answerNo": "没有",
-  "infoExplainMessage": "此工具是一个可以更改动画控制器中包含的批量转换的所有设置的工具。\r\n选择动画控制器和目标图层或过渡,然后按设置按钮。",
+  "infoExplainMessage": "此工具是一个可以更改动画控制器中包含的批量转换的所有设置的工具。\n选择动画控制器和目标图层或过渡,然后按设置按钮。",
   "warnNeedsConditionOrExitTime": "转换至少需要一个条件或退出时间才能有效，否则将被忽略。",
   "infoSettingsMessage": "通过更改缺省设置，可以成批更改为指定的值。",
   "errorMessage": "请指定动画控制器",
   "errorNeedsToSelectLayer": "选择一个或多个图层。",
   "errorNeedsToSelectTransition": "请至少选择一个过渡期。",
-  "warnStateMachineTransitionSelected": "选择的一些转换包括子状态机转换。",
+  "warnStateMachineTransitionSelected": "无法更改子状态机的转换设置。\n请选择 ߋn 有效的过渡。",
   "errorNeedsToSelectStateTransition": "选择有效的过渡",
+  "errorInvalidTransitionSelected": "选择了指定 AnimatorController 以外的过渡。\n请重新打开您在 Animator 窗口中指定的 AnimatorController。",
   "logMessage": "Transition Helper: 处理已完成。"
 }
