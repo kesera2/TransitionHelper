@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
@@ -36,6 +37,7 @@ namespace dev.kesera2.transition_helper
         private int _selectedTransitionCount;                     // 選択中のトランジションの数
         private bool _executeButtonDisabled;                      // 実行ボタンの非活性の有無
         private bool _showTransitions = true;                     // 選択中のトランジションを表示するかどうか(Foldに使用）
+        private readonly List<Tuple<string, MessageType>> _messages = new();              // メッセージ
 
         [MenuItem("Tools/kesera2/" + ToolName)]
         public static void OpenWindow()
@@ -79,6 +81,7 @@ namespace dev.kesera2.transition_helper
             DrawErrorBox();
             DrawSettingsFoldOut();
             DrawExecuteButton();
+            IsStateTransitionSelected();
             //スクロール箇所終了
             EditorGUILayout.EndScrollView();
         }
@@ -287,7 +290,7 @@ namespace dev.kesera2.transition_helper
         private void DrawExecuteButton()
         {
             // アニメーターが選択されていないまたはレイヤーが1つも選択されていない場合、実行ボタンをDisable
-            _executeButtonDisabled = IsAnimatorControllerEmpty() || !(IsSpecifiedLayerTab() && isLayerSelectedAtLeastOne()) && !IsSelectedTransitions();
+            _executeButtonDisabled = IsAnimatorControllerEmpty() || !(IsSpecifiedLayerTab() && isLayerSelectedAtLeastOne()) && !IsSelectedTransitions() || HasErrorMessage();
             EditorGUI.BeginDisabledGroup(_executeButtonDisabled);
             if (GUILayout.Button(Localization.lang.setupButtonText, GUILayout.Height(40)))
             {
@@ -372,12 +375,12 @@ namespace dev.kesera2.transition_helper
         /// </summary>
         private void DrawErrorBox()
         {
-            List<string> messages = GetErrorMessages();
-            if (messages.Count > 0)
+            GetErrorMessages(); 
+            if (_messages != null)
             {
-                foreach (string message in messages)
+                foreach (var message in _messages)
                 {
-                    EditorGUILayout.HelpBox(message, MessageType.Error);
+                    EditorGUILayout.HelpBox(message.Item1, message.Item2);
                 }
             }
         }
@@ -489,29 +492,35 @@ namespace dev.kesera2.transition_helper
         /// エラーメッセージを取得するためのメソッドです。
         /// </summary>
         /// <returns>エラーメッセージのリスト</returns>
-        private List<string> GetErrorMessages()
+        private void GetErrorMessages()
         {
-            var messages = new List<string>();
+            _messages.Clear();
             if (IsAnimatorControllerEmpty())
             {
-                messages.Add(Localization.lang.errorMessage);
+                _messages.Add(Tuple.Create(Localization.lang.errorMessage, MessageType.Error));
             }
             else if (IsSpecifiedLayerTab())
             {
                 if (!isLayerSelectedAtLeastOne())
                 {
-                    messages.Add(Localization.lang.errorNeedsToSelectLayer);
+                    _messages.Add(Tuple.Create(Localization.lang.errorNeedsToSelectLayer, MessageType.Error));
                 }
             }
             else if (IsSpecifiedTransitionTab())
             {
                 if (!IsSelectedTransitions())
                 {
-                    messages.Add(Localization.lang.errorNeedsToSelectTransition);
+                    _messages.Add(Tuple.Create(Localization.lang.errorNeedsToSelectTransition, MessageType.Error));
+                }
+                else if (IsStateTransitionSelected() && IsStateMachineTransitionSelected())
+                {
+                    _messages.Add(Tuple.Create(Localization.lang.warnStateMachineTransitionSelected, MessageType.Warning));
+                }
+                else if (IsStateMachineTransitionSelected())
+                {
+                    _messages.Add(Tuple.Create(Localization.lang.errorNeedsToSelectStateTransition, MessageType.Error));
                 }
             }
-
-            return messages;
         }
 
         /// <summary>
@@ -561,6 +570,27 @@ namespace dev.kesera2.transition_helper
         private bool IsSpecifiedTransitionTab()
         {
             return _tabIndex == 1;
+        }
+
+        /**
+         * ステートのトランジションが選択されているか
+         */
+        private bool IsStateTransitionSelected()
+        {
+            return _selectedStateTransitions != null && _selectedStateTransitions.Any();
+        }
+        
+        /**
+         * ステートマシンのトランジションが選択されているか
+         */
+        private bool IsStateMachineTransitionSelected()
+        {
+            return _selectedStateMachineTransitions != null && _selectedStateMachineTransitions.Any();
+        }
+
+        private bool HasErrorMessage()
+        {
+            return _messages != null && _messages.Any(m => m.Item2 == MessageType.Error);
         }
     }
 }

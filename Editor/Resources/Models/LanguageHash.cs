@@ -39,6 +39,8 @@ namespace dev.kesera2.transition_helper{
         public string errorMessage;
         public string errorNeedsToSelectLayer;
         public string errorNeedsToSelectTransition;
+        public string warnStateMachineTransitionSelected;
+        public string errorNeedsToSelectStateTransition;
 
         [Header("Log")]
         public string logMessage;
