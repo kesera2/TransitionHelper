@@ -26,5 +26,5 @@
     "warnStateMachineTransitionSelected": "서브스테이트 머신에서의 트랜지션 설정은 변경할 수 없습니다.\n유효한 트랜지션을 선택해 주세요.",
     "errorNeedsToSelectStateTransition": "유효한 트랜지션을 선택해 주세요 ",
     "errorInvalidTransitionSelected": "지정한 애니메이터 컨트롤러 이외의 트랜지션이 선택되어 있습니다.\n지정한 Animator Controller를 Animator 창에서 다시 여십시오.",
-    "logMessage": "Transition Helper: 처리 완료되었습니다"
+    "completeMessage": "처리 완료되었습니다"
 }

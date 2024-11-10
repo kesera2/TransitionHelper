@@ -26,5 +26,5 @@
   "warnStateMachineTransitionSelected": "Some of the transitions being selected include sub-state machine transitions.",
   "errorNeedsToSelectStateTransition": "Transition settings from the sub-state machine cannot be changed. \nPlease select the ߋn valid transitions.",
   "errorInvalidTransitionSelected": "A transition other than the specified AnimatorController has been selected. \nPlease reopen the AnimatorController you specified in the Animator window." ,
-  "logMessage": "Transition Helper: The process has been completed."
+  "completeMessage": "The process has been completed."
 }

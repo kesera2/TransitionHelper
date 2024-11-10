@@ -26,5 +26,5 @@
   "warnStateMachineTransitionSelected": "无法更改子状态机的转换设置。\n请选择 ߋn 有效的过渡。",
   "errorNeedsToSelectStateTransition": "选择有效的过渡",
   "errorInvalidTransitionSelected": "选择了指定 AnimatorController 以外的过渡。\n请重新打开您在 Animator 窗口中指定的 AnimatorController。",
-  "logMessage": "Transition Helper: 处理已完成。"
+  "completeMessage": "处理已完成。"
 }

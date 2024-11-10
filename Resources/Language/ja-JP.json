@@ -26,5 +26,5 @@
     "warnStateMachineTransitionSelected": "選択中のトランジションの一部にサブステートマシンのトランジションが含まれています。",
     "errorNeedsToSelectStateTransition": "サブステートマシンからのトランジションの設定は変更できません。\n有効なトランジションを選択してください。",
     "errorInvalidTransitionSelected": "指定したアニメーターコントローラー以外のトランジションが選択されています。\n指定したAnimatorControllerをAnimatorウィンドウで開き直してください。",
-    "logMessage": "Transition Helper: 処理が完了しました。"
+    "completeMessage": "処理が完了しました。"
 }
