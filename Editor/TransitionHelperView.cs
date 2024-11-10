@@ -50,7 +50,7 @@ namespace dev.kesera2.transition_helper
         private void OnEnable()
         {
             Localization.Localize();
-            _tabToggles = new[] { Localization.lang.layerSpecificationMode, Localization.lang.transitionSpecificationMode };
+            _tabToggles = new[] { Localization.Lang.layerSpecificationMode, Localization.Lang.transitionSpecificationMode };
         }
 
         public void OnInspectorUpdate()
@@ -153,18 +153,18 @@ namespace dev.kesera2.transition_helper
             _destSourceTransitionPairs = Utility.GetDestSourceTransitionPairs(_animatorController); // ステート名辞書を取得
             using (new GUILayout.HorizontalScope())
             {
-                if (GUILayout.Button(Localization.lang.selectAllTransitionsButton))
+                if (GUILayout.Button(Localization.Lang.selectAllTransitionsButton))
                 {
                     Utility.SelectAllTransitions(Utility.GetSelectedLayer(_animatorController));
                 }
-                if (GUILayout.Button(Localization.lang.unselectTransitionsButton))
+                if (GUILayout.Button(Localization.Lang.unselectTransitionsButton))
                 {
                     Utility.UnselectTransitions();
                 }
             }
             EditorGUILayout.BeginVertical("box");
             // 選択中のトランジションのフォールドを表示（デフォルト表示）
-            _showTransitions = EditorGUILayout.Foldout(_showTransitions, string.Format(Localization.lang.selectedTransitionsCount, _selectedTransitionCount));
+            _showTransitions = EditorGUILayout.Foldout(_showTransitions, string.Format(Localization.Lang.selectedTransitionsCount, _selectedTransitionCount));
             // 遷移元 -> 遷移先のリストを描画
             DrawTransitionInfo();
             EditorGUILayout.EndVertical();
@@ -244,7 +244,7 @@ namespace dev.kesera2.transition_helper
             using (new EditorGUILayout.HorizontalScope())
             {
                 // すべてのチェックボックスをONにするボタン
-                if (GUILayout.Button(Localization.lang.toggleAll))
+                if (GUILayout.Button(Localization.Lang.toggleAll))
                 {
                     for (var i = 0; i < _layerEnabled.Length; i++)
                     {
@@ -253,7 +253,7 @@ namespace dev.kesera2.transition_helper
                 }
 
                 // すべてのチェックボックスをOFFにするボタン
-                if (!GUILayout.Button(Localization.lang.toggleNone)) return;
+                if (!GUILayout.Button(Localization.Lang.toggleNone)) return;
                 {
                     for (var i = 0; i < _layerEnabled.Length; i++)
                     {
@@ -268,7 +268,7 @@ namespace dev.kesera2.transition_helper
         /// </summary>
         private static void DrawInformation()
         {
-            EditorGUILayout.HelpBox(Localization.lang.infoExplainMessage, MessageType.Info);
+            EditorGUILayout.HelpBox(Localization.Lang.infoExplainMessage, MessageType.Info);
         }
 
         /// <summary>
@@ -278,10 +278,10 @@ namespace dev.kesera2.transition_helper
         private static bool DisplayConfirmDialog()
         {
             return EditorUtility.DisplayDialog(
-            Localization.lang.confirmTitle,
-            Localization.lang.confirmContent,
-            Localization.lang.answerYes,
-            Localization.lang.answerNo);
+            Localization.Lang.confirmTitle,
+            Localization.Lang.confirmContent,
+            Localization.Lang.answerYes,
+            Localization.Lang.answerNo);
         }
 
         /// <summary>
@@ -292,7 +292,7 @@ namespace dev.kesera2.transition_helper
             // アニメーターが選択されていないまたはレイヤーが1つも選択されていない場合、実行ボタンをDisable
             _executeButtonDisabled = IsAnimatorControllerEmpty() || !(IsSpecifiedLayerTab() && isLayerSelectedAtLeastOne()) && !IsSelectedTransitions() || HasErrorMessage();
             EditorGUI.BeginDisabledGroup(_executeButtonDisabled);
-            if (GUILayout.Button(Localization.lang.setupButtonText, GUILayout.Height(40)))
+            if (GUILayout.Button(Localization.Lang.setupButtonText, GUILayout.Height(40)))
             {
                 if (!DisplayConfirmDialog())
                 {
@@ -364,8 +364,8 @@ namespace dev.kesera2.transition_helper
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    _includeSubStateMachine = EditorGUILayout.ToggleLeft(Localization.lang.includeSubStateMachineText, _includeSubStateMachine);
-                    _writeDefaultsOff = EditorGUILayout.ToggleLeft(Localization.lang.writeDefaultsOffText, _writeDefaultsOff);
+                    _includeSubStateMachine = EditorGUILayout.ToggleLeft(Localization.Lang.includeSubStateMachineText, _includeSubStateMachine);
+                    _writeDefaultsOff = EditorGUILayout.ToggleLeft(Localization.Lang.writeDefaultsOffText, _writeDefaultsOff);
                 }
             }
         }
@@ -390,8 +390,8 @@ namespace dev.kesera2.transition_helper
         /// </summary>
         private void DrawSettingsFoldOut()
         {
-            var labelWidth = Utility.GetNormalFontStyle().CalcSize(new GUIContent(Localization.lang.keepWriteDefaultsOfBlendTree)).x + SettingsLabelWidthOffset;
-            _showSettings = EditorGUILayout.Foldout(_showSettings, Localization.lang.settingsLabelText);
+            var labelWidth = Utility.GetNormalFontStyle().CalcSize(new GUIContent(Localization.Lang.keepWriteDefaultsOfBlendTree)).x + SettingsLabelWidthOffset;
+            _showSettings = EditorGUILayout.Foldout(_showSettings, Localization.Lang.settingsLabelText);
             if (!_showSettings) return;
             using (new LabelWidthScope(labelWidth))
             {
@@ -401,10 +401,10 @@ namespace dev.kesera2.transition_helper
             {
                 using (new EditorGUI.IndentLevelScope())
                 {
-                    _ignoreNoCondition = EditorGUILayout.ToggleLeft(Localization.lang.ignoreNoConditionText, _ignoreNoCondition);
+                    _ignoreNoCondition = EditorGUILayout.ToggleLeft(Localization.Lang.ignoreNoConditionText, _ignoreNoCondition);
                     if (!_ignoreNoCondition)
                     {
-                        EditorGUILayout.HelpBox(Localization.lang.warnNeedsConditionOrExitTime, MessageType.Warning);
+                        EditorGUILayout.HelpBox(Localization.Lang.warnNeedsConditionOrExitTime, MessageType.Warning);
                     }
                 }
             }
@@ -414,7 +414,7 @@ namespace dev.kesera2.transition_helper
                 _fixedDuration = EditorGUILayout.Toggle("Fixed Duration", _fixedDuration);
                 _transitionDuration = EditorGUILayout.IntField("Transition Duration", _transitionDuration);
                 _transitionOffset = EditorGUILayout.IntField("Transition Offset", _transitionOffset);
-                _keepWriteDefaultsOfBlendTree = EditorGUILayout.Toggle(Localization.lang.keepWriteDefaultsOfBlendTree, _keepWriteDefaultsOfBlendTree);
+                _keepWriteDefaultsOfBlendTree = EditorGUILayout.Toggle(Localization.Lang.keepWriteDefaultsOfBlendTree, _keepWriteDefaultsOfBlendTree);
             }
         }
 
@@ -497,28 +497,28 @@ namespace dev.kesera2.transition_helper
             _messages.Clear();
             if (IsAnimatorControllerEmpty())
             {
-                _messages.Add(Tuple.Create(Localization.lang.errorMessage, MessageType.Error));
+                _messages.Add(Tuple.Create(Localization.Lang.errorMessage, MessageType.Error));
             }
             else if (IsSpecifiedLayerTab())
             {
                 if (!isLayerSelectedAtLeastOne())
                 {
-                    _messages.Add(Tuple.Create(Localization.lang.errorNeedsToSelectLayer, MessageType.Error));
+                    _messages.Add(Tuple.Create(Localization.Lang.errorNeedsToSelectLayer, MessageType.Error));
                 }
             }
             else if (IsSpecifiedTransitionTab())
             {
                 if (!IsSelectedTransitions())
                 {
-                    _messages.Add(Tuple.Create(Localization.lang.errorNeedsToSelectTransition, MessageType.Error));
+                    _messages.Add(Tuple.Create(Localization.Lang.errorNeedsToSelectTransition, MessageType.Error));
                 }
                 else if (IsStateTransitionSelected() && IsStateMachineTransitionSelected())
                 {
-                    _messages.Add(Tuple.Create(Localization.lang.warnStateMachineTransitionSelected, MessageType.Warning));
+                    _messages.Add(Tuple.Create(Localization.Lang.warnStateMachineTransitionSelected, MessageType.Warning));
                 }
                 else if (IsStateMachineTransitionSelected())
                 {
-                    _messages.Add(Tuple.Create(Localization.lang.errorNeedsToSelectStateTransition, MessageType.Error));
+                    _messages.Add(Tuple.Create(Localization.Lang.errorNeedsToSelectStateTransition, MessageType.Error));
                 }
             }
         }
