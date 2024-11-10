@@ -300,18 +300,8 @@ namespace dev.kesera2.transition_helper
         /// </summary>
         public static void SaveChanges()
         {
-            // Debug.Log(Localization.lang.logMessage);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
-
-        // デバッグ用
-        // private static void ForDebug(Dictionary<int, string> destSourceTransitionPairs)
-        // {
-        //     foreach (var kvp in destSourceTransitionPairs)
-        //     {
-        //         Debug.Log(string.Format("Key: {0}, Value: {1}", kvp.Key, kvp.Value));
-        //     }
-        // }
     }
 }

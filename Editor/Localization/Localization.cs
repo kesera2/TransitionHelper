@@ -36,16 +36,12 @@ namespace dev.kesera2.transition_helper
 
         static Localization()
         {
-            var lastLanguage = EditorPrefs.GetString(localizationPathGuid);
-            if (lastLanguage == string.Empty) Localize();
-            CurrentLanguage = SupportedLanguages.IndexOf(lastLanguage);
-            Localize(lastLanguage);
-            Debug.Log(lastLanguage);
+            Localize();
         }
 
-        public static void Localize(string language = "ja-JP")
+        public static void Localize()
         {
-            var path = Path.Combine(localizationPathRoot, language + ".json");
+            var path = Path.Combine(localizationPathRoot, SupportedLanguages[CurrentLanguage] + ".json");
             if (!File.Exists(path)) return;
             var json = File.ReadAllText(path);
             localizedText = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
@@ -63,17 +59,14 @@ namespace dev.kesera2.transition_helper
 
         public static void SaveLanguage()
         {
-            Debug.Log("Disabled on " + SupportedLanguages[CurrentLanguage]);
-            EditorPrefs.SetString(localizationPathGuid, SupportedLanguages[CurrentLanguage]);
+            EditorPrefs.SetInt(localizationPathGuid, CurrentLanguage);
         }
 
         public static void LoadLanguage()
         {
-            var lastLanguage = EditorPrefs.GetString(localizationPathGuid);
-            Debug.Log("LoadLanguage : lastlanguage " + lastLanguage);
-            if (lastLanguage == string.Empty) return;
-            Debug.Log("Enabled " + SupportedLanguages.IndexOf(lastLanguage));
-            CurrentLanguage = SupportedLanguages.IndexOf(lastLanguage);
+            var lastLanguage = EditorPrefs.GetInt(localizationPathGuid);
+            CurrentLanguage = lastLanguage;
+            Localize();
         }
     }
 }

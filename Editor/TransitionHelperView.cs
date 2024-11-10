@@ -47,6 +47,7 @@ namespace dev.kesera2.transition_helper
         [MenuItem("Tools/kesera2/" + ToolName)]
         public static void OpenWindow()
         {
+            Localization.LoadLanguage();
             var window = GetWindow<TransitionHelperView>();
             window.titleContent = new GUIContent(ToolName);
             window.minSize = new Vector2(WindowMinWidth, WindowMinHeight);
@@ -55,8 +56,14 @@ namespace dev.kesera2.transition_helper
 
         private void OnEnable()
         {
+            _lastSelectedLanguage = Localization.CurrentLanguage;
             _tabToggles = new[]
                 { Localization.S("layerSpecificationMode"), Localization.S("transitionSpecificationMode") };
+        }
+
+        private void OnDisable()
+        {
+            Localization.SaveLanguage();
         }
 
         public void OnInspectorUpdate()
@@ -426,7 +433,7 @@ namespace dev.kesera2.transition_helper
                 if (Localization.CurrentLanguage != _lastSelectedLanguage)
                 {
                     Localization.CurrentLanguage = _lastSelectedLanguage;
-                    Localization.Localize(Localization.SupportedLanguages[Localization.CurrentLanguage]);
+                    Localization.Localize();
                     _tabToggles = new[]
                         { Localization.S("layerSpecificationMode"), Localization.S("transitionSpecificationMode") };
                 }
