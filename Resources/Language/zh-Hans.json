@@ -25,5 +25,6 @@
   "errorNeedsToSelectTransition": "请至少选择一个过渡期。",
   "warnStateMachineTransitionSelected": "选择的一些转换包括子状态机转换。",
   "errorNeedsToSelectStateTransition": "选择有效的过渡",
+  "errorInvalidTransitionSelected": "选择了指定 AnimatorController 以外的过渡。\r\n请重新打开您在 Animator 窗口中指定的 AnimatorController。",
   "logMessage": "Transition Helper: 处理已完成。"
 }

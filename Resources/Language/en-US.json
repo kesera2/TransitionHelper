@@ -25,5 +25,6 @@
   "errorNeedsToSelectTransition": "Please select at least one transition.",
   "warnStateMachineTransitionSelected": "Some of the transitions being selected include sub-state machine transitions.",
   "errorNeedsToSelectStateTransition": "Select valid transitions",
+  "errorInvalidTransitionSelected": "A transition other than the specified AnimatorController has been selected. \r\nPlease reopen the AnimatorController you specified in the Animator window." ,
   "logMessage": "Transition Helper: The process has been completed."
 }
