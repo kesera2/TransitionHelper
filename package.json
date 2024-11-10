@@ -1,0 +1,12 @@
+{
+  "name": "dev.kesera2.transition-helper",
+  "version": "1.1.0",
+  "displayName": "Transition Helper",
+  "description": "Config Transition and State options in Animator Window",
+  "author": {
+    "name": "kesera2"
+  },
+  "unity": "2022.3",
+  "license": "zlib",
+  "repo": "https://kesera2.github.io/vpm-listing/index.json"
+}
