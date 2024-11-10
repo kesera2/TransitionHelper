@@ -284,8 +284,13 @@ namespace dev.kesera2.transition_helper
             var editorGraphModule = asm.GetModule("UnityEditor.Graphs.dll");
             var typeAnimatorWindow = editorGraphModule.GetType("UnityEditor.Graphs.AnimatorControllerTool");
             var animatorWindow = EditorWindow.GetWindow(typeAnimatorWindow);
-            var selectedLayerIndex = typeAnimatorWindow.GetProperty("selectedLayerIndex")!.GetValue(animatorWindow);
-            return (int)selectedLayerIndex;
+            var propertyInfo = typeAnimatorWindow.GetProperty("selectedLayerIndex");
+            int selectedLayerIndex = 0;
+            if (propertyInfo != null)
+            {
+                selectedLayerIndex = (int)propertyInfo.GetValue(animatorWindow);
+            }
+            return selectedLayerIndex;
         }
 
         /// <summary>
