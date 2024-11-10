@@ -3,7 +3,8 @@ name: Build Release
 on:
   workflow_dispatch:
   push:
-    branch: "main"
+    branches:
+        - "main"
 
 jobs:
 
