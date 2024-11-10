@@ -147,7 +147,6 @@ namespace TransitionHelper
             _selectedStateMachineTransitions = Selection.objects.OfType<AnimatorTransition>().Where(_ => true).ToArray(); // 選択中サブステートマシンのトランジション
             _selectedTransitionCount = _selectedStateTransitions.Length + _selectedStateMachineTransitions.Length; // 選択中のトランジションの数を合算
             _destSourceTransitionPairs = Utility.GetDestSourceTransitionPairs(_animatorController); // ステート名辞書を取得
-            GUILayout.Label(string.Format(Localization.lang.selectedLayer, Utility.GetSelectedLayerName(_animatorController))); // 選択中のレイヤーラベル
             using (new GUILayout.HorizontalScope())
             {
                 if (GUILayout.Button(Localization.lang.selectAllTransitionsButton))
@@ -345,7 +344,7 @@ namespace TransitionHelper
         /// </summary>
         private void SetupSelectedTransitions()
         {
-            AnimatorStateTransition[] selectedTransitions = Selection.objects.Select(x => x as AnimatorStateTransition).Where(y => y != null).ToArray();
+            var selectedTransitions = Selection.objects.Select(x => x as AnimatorStateTransition).Where(y => y).ToArray();
             foreach (var selectedTransition in selectedTransitions)
             {
                 SetTransitionValue(selectedTransition);

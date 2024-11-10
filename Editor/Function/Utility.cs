@@ -278,16 +278,6 @@ namespace TransitionHelper
         }
 
         /// <summary>
-        /// 指定したアニメーターコントローラー内で選択中のレイヤーの名前を取得します。
-        /// </summary>
-        /// <param name="animatorController">対象のアニメーターコントローラー</param>
-        /// <returns>選択中のレイヤーの名前</returns>
-        public static string GetSelectedLayerName(AnimatorController animatorController)
-        {
-            return GetSelectedLayer(animatorController).name;
-        }
-
-        /// <summary>
         /// 設定の保存を行います。
         /// </summary>
         public static void SaveChanges()
