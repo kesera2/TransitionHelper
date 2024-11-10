@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace TransitionHelper
 {
@@ -110,6 +112,41 @@ namespace TransitionHelper
             return style;
         }
 
+        /**
+         * Key: InstanceID of transition
+         * Value: Tuple of SourceStateName, DestStateName
+         */
+        public static Dictionary<int, Tuple<string, string>> GetTransitionsStateInfo(AnimatorController animatorController)
+        {
+            Dictionary<int, Tuple<string, string>> transitionsStateInfo = new Dictionary<int, Tuple<string, string>>();
+            if (animatorController == null)
+            {
+                return null;
+            }
+
+            foreach (AnimatorControllerLayer layer in animatorController.layers) 
+            {
+                // ステート
+                // サブステートマシン
+            }
+            return null;
+        }
+
+        public static Dictionary<int, Tuple<string, string>> GetAnimatorStateInfo(
+            Dictionary<int, Tuple<string, string>> stateInfo, ChildAnimatorState[] states)
+        {
+            foreach (var state in states)
+            {
+                var transitions = state.state.transitions;
+                foreach (var transition in transitions)
+                {
+                    
+                }
+            }
+            return null;
+        }
+        
+
         /// <summary>
         /// アニメーターコントローラーから、遷移先のステート名をキーにインスタンスIDをバリューにした辞書を取得します。
         /// </summary>
@@ -127,23 +164,43 @@ namespace TransitionHelper
             // FIXME: 選択中のレイヤーに限定する <- 同じレイヤー名があると表示がバグる
             foreach (AnimatorControllerLayer layer in layers)
             {
-
                 // ステートマシンからサブステートマシンへ
-                foreach (ChildAnimatorState state in layer.stateMachine.states)
+                GetStatemachineInfo(destSourceTransitionPairs, layer.stateMachine);
+                GetSubstateMachineInfo(destSourceTransitionPairs, layer.stateMachine);
+                
+            }
+            return destSourceTransitionPairs;
+        }
+
+        private static void GetStatemachineInfo(Dictionary<int, string> destSourceTransitionPairs,
+            AnimatorStateMachine parentStateMachine)
+        {
+            if (parentStateMachine == null) return;
+            foreach (ChildAnimatorState state in parentStateMachine.states)
                 {
+                    // 階層1
                     foreach (AnimatorStateTransition transition in state.state.transitions)
                     {
+                        string sourceName = state.state.name;
                         string destName = null;
                         int instanceId = 0;
+                        // State -> State
                         if (transition.destinationState != null)
                         {
                             destName = transition.destinationState.name;
+                            Debug.Log($"State -> State: {sourceName} -> {destName}");
                             instanceId = transition.destinationState.GetInstanceID();
+                            GetStatemachineInfo(destSourceTransitionPairs, transition.destinationStateMachine);
+                            GetSubstateMachineInfo(destSourceTransitionPairs, transition.destinationStateMachine);
                         }
+                        // State -> SubState
                         else if (transition.destinationStateMachine != null)
                         {
                             destName = transition.destinationStateMachine.name;
                             instanceId = transition.destinationStateMachine.GetInstanceID();
+                            Debug.Log($"State -> SubState: {sourceName} -> {destName}");
+                            GetStatemachineInfo(destSourceTransitionPairs, transition.destinationStateMachine);
+                            GetSubstateMachineInfo(destSourceTransitionPairs, transition.destinationStateMachine);
                         }
                         else if (transition.isExit)
                         {
@@ -155,36 +212,48 @@ namespace TransitionHelper
                         }
                     }
                 }
-
-                // サブステートマシンからステートマシンへ
-                foreach (ChildAnimatorStateMachine stateMachine in layer.stateMachine.stateMachines)
+        }
+        
+        private static void GetSubstateMachineInfo(Dictionary<int, string> destSourceTransitionPairs,AnimatorStateMachine parentStateMachine)
+        {
+            if(parentStateMachine == null) return;
+            // サブステートマシンからステートマシンへ
+            foreach (ChildAnimatorStateMachine stateMachine in parentStateMachine.stateMachines)
+            {
+                string stateMachineName = stateMachine.stateMachine.name;
+                AnimatorTransition[] transitions = parentStateMachine.GetStateMachineTransitions(stateMachine.stateMachine);
+                foreach (AnimatorTransition transition in transitions)
                 {
-                    string stateMachineName = stateMachine.stateMachine.name;
-                    AnimatorTransition[] transitions = layer.stateMachine.GetStateMachineTransitions(stateMachine.stateMachine);
-                    foreach (AnimatorTransition transition in transitions)
+                    string sourceName = stateMachineName;
+                    int instanceId = 0;
+                    // SubState -> State
+                    if (transition.destinationState != null)
                     {
-                        int instanceId = 0;
-                        if (transition.destinationState != null)
-                        {
-                            instanceId = transition.destinationState.GetInstanceID();
-                            string destName = transition.destinationState.name;
-                        }
-                        else if (transition.destinationStateMachine != null)
-                        {
-                            instanceId = transition.destinationStateMachine.GetInstanceID();
-                        }
-                        else if (transition.isExit)
-                        {
-                            instanceId = transition.GetInstanceID();
-                        }
-                        if (instanceId != 0 && !destSourceTransitionPairs.ContainsKey(instanceId))
-                        {
-                            destSourceTransitionPairs.Add(instanceId, stateMachineName);
-                        }
+                        instanceId = transition.destinationState.GetInstanceID();
+                        string destName = transition.destinationState.name;
+                        Debug.Log($"SubState -> State : {sourceName} -> {destName}");
+                        GetStatemachineInfo(destSourceTransitionPairs, transition.destinationStateMachine);
+                        GetSubstateMachineInfo(destSourceTransitionPairs, transition.destinationStateMachine);
+                    }
+                    // Substate -> SubState
+                    else if (transition.destinationStateMachine != null)
+                    {
+                        string destName = transition.destinationStateMachine.name;
+                        Debug.Log($"Substate -> SubState : {sourceName} -> {destName}");
+                        instanceId = transition.destinationStateMachine.GetInstanceID();
+                        GetStatemachineInfo(destSourceTransitionPairs, transition.destinationStateMachine);
+                        GetSubstateMachineInfo(destSourceTransitionPairs, transition.destinationStateMachine);
+                    }
+                    else if (transition.isExit)
+                    {
+                        instanceId = transition.GetInstanceID();
+                    }
+                    if (instanceId != 0 && !destSourceTransitionPairs.ContainsKey(instanceId))
+                    {
+                        destSourceTransitionPairs.Add(instanceId, stateMachineName);
                     }
                 }
             }
-            return destSourceTransitionPairs;
         }
 
         /// <summary>
