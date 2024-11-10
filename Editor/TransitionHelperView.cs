@@ -212,6 +212,7 @@ namespace dev.kesera2.transition_helper
                     if (!_destSourceTransitionPairs.ContainsKey(transition.destinationState.GetInstanceID()))
                     {
                         IsInvalidTransitionSelected = true;
+                        EditorGUI.indentLevel = 0;
                         return;
                     }
                     sourceStateName = _destSourceTransitionPairs[transition.destinationState.GetInstanceID()];
@@ -222,6 +223,7 @@ namespace dev.kesera2.transition_helper
                     if ( !_destSourceTransitionPairs.ContainsKey(transition.destinationStateMachine.GetInstanceID()))
                     {
                         IsInvalidTransitionSelected = true;
+                        EditorGUI.indentLevel = 0;
                         return;
                     }
                     sourceStateName = _destSourceTransitionPairs[transition.destinationStateMachine.GetInstanceID()];
@@ -232,6 +234,7 @@ namespace dev.kesera2.transition_helper
                     if (!_destSourceTransitionPairs.ContainsKey(transition.GetInstanceID()))
                     {
                         IsInvalidTransitionSelected = true;
+                        EditorGUI.indentLevel = 0;
                         return;
                     }
                     sourceStateName = _destSourceTransitionPairs[transition.GetInstanceID()];
