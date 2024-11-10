@@ -23,6 +23,7 @@ namespace dev.kesera2.transition_helper
             {
                 parentPath += ".";
             }
+
             parentPath += stateMachine.name;
             return parentPath;
         }
@@ -53,7 +54,8 @@ namespace dev.kesera2.transition_helper
         /// <param name="stateMachine">対象のアニメーターステートマシン</param>
         /// <param name="parentPath">ステートの親パス</param>
         /// <param name="result">結果を格納するリスト</param>
-        public static void GetAllStates(AnimatorStateMachine stateMachine, string parentPath, List<AnimatorState> result)
+        public static void GetAllStates(AnimatorStateMachine stateMachine, string parentPath,
+            List<AnimatorState> result)
         {
             parentPath = GetParentPath(stateMachine, parentPath);
 
@@ -73,8 +75,8 @@ namespace dev.kesera2.transition_helper
         /// <param name="stateMachine">対象のアニメーターステートマシン</param>
         /// <param name="parentPath">ステートの親パス</param>
         /// <param name="result">結果を格納するリスト</param>
-
-        public static void GetAllStatesTransitions(AnimatorStateMachine stateMachine, string parentPath, List<AnimatorStateTransition[]> result)
+        public static void GetAllStatesTransitions(AnimatorStateMachine stateMachine, string parentPath,
+            List<AnimatorStateTransition[]> result)
         {
             parentPath = GetParentPath(stateMachine, parentPath);
 
@@ -120,11 +122,13 @@ namespace dev.kesera2.transition_helper
             {
                 return null;
             }
+
             foreach (var layer in animatorController.layers)
             {
                 GetStateMachineInfo(destSourceTransitionPairs, layer.stateMachine);
                 GetSubStateMachineInfo(destSourceTransitionPairs, layer.stateMachine);
             }
+
             return destSourceTransitionPairs;
         }
 
@@ -161,6 +165,7 @@ namespace dev.kesera2.transition_helper
                     {
                         instanceId = transition.GetInstanceID();
                     }
+
                     if (instanceId != 0 && !destSourceTransitionPairs.ContainsKey(instanceId))
                     {
                         destSourceTransitionPairs.Add(instanceId, state.state.name);
@@ -168,10 +173,11 @@ namespace dev.kesera2.transition_helper
                 }
             }
         }
-        
-        private static void GetSubStateMachineInfo(Dictionary<int, string> destSourceTransitionPairs,AnimatorStateMachine parentStateMachine)
+
+        private static void GetSubStateMachineInfo(Dictionary<int, string> destSourceTransitionPairs,
+            AnimatorStateMachine parentStateMachine)
         {
-            if(!parentStateMachine) return;
+            if (!parentStateMachine) return;
             // サブステートマシンからステートマシンへ
             foreach (var stateMachine in parentStateMachine.stateMachines)
             {
@@ -203,6 +209,7 @@ namespace dev.kesera2.transition_helper
                     {
                         instanceId = transition.GetInstanceID();
                     }
+
                     if (instanceId != 0)
                     {
                         destSourceTransitionPairs.TryAdd(instanceId, stateMachineName);
@@ -224,7 +231,8 @@ namespace dev.kesera2.transition_helper
             Selection.objects = transitions.ToArray();
         }
 
-        private static void SelectRecursiveStateTransitions(List<Object> transitions, AnimatorStateMachine parentStateMachine)
+        private static void SelectRecursiveStateTransitions(List<Object> transitions,
+            AnimatorStateMachine parentStateMachine)
         {
             if (!parentStateMachine) return;
             foreach (var state in parentStateMachine.states)
