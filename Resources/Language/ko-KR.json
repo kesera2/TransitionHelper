@@ -17,14 +17,14 @@
     "confirmContent": "실행해도 될까요?",
     "answerYes": "네 ",
     "answerNo": "아니에요",
-    "infoExplainMessage": "이 도구는 애니메이터 컨트롤러에 포함된 전환에 대한 모든 설정을 일괄적으로 변경하는 도구입니다.\r\n애니메이터 컨트롤러 및 대상 레이어 또는 전환을 선택하고 설정 버튼을 누릅니다.",
+    "infoExplainMessage": "이 도구는 애니메이터 컨트롤러에 포함된 전환에 대한 모든 설정을 일괄적으로 변경하는 도구입니다.\n애니메이터 컨트롤러 및 대상 레이어 또는 전환을 선택하고 설정 버튼을 누릅니다.",
     "warnNeedsConditionOrExitTime": "상태 전이에는 적어도 하나의 조건 또는 종료 시간이 필요합니다. 그렇지 않으면 상태 전이가 무시됩니다.",
     "infoSettingsMessage": "기본 설정을 변경하여 일괄 지정한 값으로 변경할 수 있습니다.",
     "errorMessage": "애니메이터 컨트롤러를 지정하십시오",
     "errorNeedsToSelectLayer": "레이어를 하나 이상 선택하십시오.",
     "errorNeedsToSelectTransition": "전환을 하나 이상 선택하십시오.",
-    "warnStateMachineTransitionSelected": "선택 중인 트랜지션의 일부에 서브스테이트 머신 트랜지션이 포함되어 있습니다 ",
+    "warnStateMachineTransitionSelected": "서브스테이트 머신에서의 트랜지션 설정은 변경할 수 없습니다.\n유효한 트랜지션을 선택해 주세요.",
     "errorNeedsToSelectStateTransition": "유효한 트랜지션을 선택해 주세요 ",
-    "errorInvalidTransitionSelected": "지정한 애니메이터 컨트롤러 이외의 트랜지션이 선택되어 있습니다.\r\n지정한 Animator Controller를 Animator 창에서 다시 여십시오.",
+    "errorInvalidTransitionSelected": "지정한 애니메이터 컨트롤러 이외의 트랜지션이 선택되어 있습니다.\n지정한 Animator Controller를 Animator 창에서 다시 여십시오.",
     "logMessage": "Transition Helper: 처리 완료되었습니다"
 }
