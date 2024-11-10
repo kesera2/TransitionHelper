@@ -7,7 +7,8 @@ namespace dev.kesera2.transition_helper
 {
     public class Localization : ScriptableSingleton<Localization>
     {
-        public static LanguageHash Lang { get; private set; }
+        public LanguageHash Lang { get; private set; }
+        public static LanguageEnum SelectedLanguage = LanguageEnum.日本語;
 
         // ローカライズ
         private const string LangAssetFolderPath = "Language/";
@@ -16,39 +17,54 @@ namespace dev.kesera2.transition_helper
         private const string KrAssetName = "KR";
         private const string CnAssetName = "CN";
 
+        public enum LanguageEnum
+        {
+            日本語,
+            English,
+            한국어,
+            汉语
+        }
+
         public void OnEnable()
         {
-            Debug.Log(Application.systemLanguage);
-            if (Application.systemLanguage == SystemLanguage.Japanese)
+            switch (Application.systemLanguage)
             {
-                Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + JpAssetName);
+                case SystemLanguage.Japanese:
+                    Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + JpAssetName);
+                    SelectedLanguage = LanguageEnum.日本語;
+                    break;
+                case SystemLanguage.Korean:
+                    Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + KrAssetName);
+                    SelectedLanguage = LanguageEnum.한국어;
+                    break;
+                case SystemLanguage.Chinese:
+                    Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + CnAssetName);
+                    SelectedLanguage = LanguageEnum.汉语;
+                    break;
+                default:
+                    Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + EnAssetName);
+                    SelectedLanguage = LanguageEnum.English;
+                    break;
             }
-            else
-            {
-                Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + EnAssetName);
-            }
-
         }
 
-        public static void Localize()
+        public void Localize()
         {
-            if (Application.systemLanguage == SystemLanguage.Japanese)
+            switch (SelectedLanguage)
             {
-                Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + JpAssetName);
-            }
-            else if (Application.systemLanguage == SystemLanguage.Korean)
-            {
-                Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + KrAssetName);
-            }
-            else if (Application.systemLanguage == SystemLanguage.Chinese)
-            {
-                Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + CnAssetName);
-            }
-            else
-            {
-                Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + EnAssetName);
+                case LanguageEnum.日本語:
+                    Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + JpAssetName);
+                    break;
+                case LanguageEnum.한국어:
+                    Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + KrAssetName);
+                    break;
+                case LanguageEnum.汉语:
+                    Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + CnAssetName);
+                    break;
+                default:
+                    Lang = Resources.Load<LanguageHash>(LangAssetFolderPath + EnAssetName);
+                    break;
             }
         }
-
     }
 }
