@@ -91,13 +91,11 @@ namespace dev.kesera2.transition_helper
             else if (IsSpecifiedTransitionTab())
             {
                 DrawTransitionMenu();
-                // 遷移元 -> 遷移先のリストを描画
-                DrawTransitionInfo();
             }
 
-            DrawErrorBox();
             DrawSettingsFoldOut();
             DrawExecuteButton();
+            DrawErrorBox();
             IsStateTransitionSelected();
             //スクロール箇所終了
             EditorGUILayout.EndScrollView();
@@ -191,7 +189,7 @@ namespace dev.kesera2.transition_helper
             // 選択中のトランジションのフォールドを表示（デフォルト表示）
             _showTransitions = EditorGUILayout.Foldout(_showTransitions,
                 string.Format(Localization.S("selectedTransitionsCount"), _selectedTransitionCount));
-
+            DrawTransitionInfo();
             EditorGUILayout.EndVertical();
         }
 
@@ -499,32 +497,37 @@ namespace dev.kesera2.transition_helper
                     .x + SettingsLabelWidthOffset;
             _showSettings = EditorGUILayout.Foldout(_showSettings, Localization.S("settingsLabelText"));
             if (!_showSettings) return;
-            using (new LabelWidthScope(labelWidth))
+            using (new EditorGUI.IndentLevelScope())
             {
-                _hasExitTime = EditorGUILayout.Toggle("Has Exit Time", _hasExitTime);
-            }
-
-            if (!_hasExitTime)
-            {
-                using (new EditorGUI.IndentLevelScope())
+                using (new LabelWidthScope(labelWidth))
                 {
-                    _ignoreNoCondition =
-                        EditorGUILayout.ToggleLeft(Localization.S("ignoreNoConditionText"), _ignoreNoCondition);
-                    if (!_ignoreNoCondition)
+                    _hasExitTime = EditorGUILayout.Toggle("Has Exit Time", _hasExitTime);
+                }
+
+                if (!_hasExitTime)
+                {
+                    using (new EditorGUI.IndentLevelScope())
                     {
-                        EditorGUILayout.HelpBox(Localization.S("warnNeedsConditionOrExitTime"), MessageType.Warning);
+                        _ignoreNoCondition =
+                            EditorGUILayout.ToggleLeft(Localization.S("ignoreNoConditionText"), _ignoreNoCondition);
+                        if (!_ignoreNoCondition)
+                        {
+                            EditorGUILayout.HelpBox(Localization.S("warnNeedsConditionOrExitTime"),
+                                MessageType.Warning);
+                        }
                     }
                 }
-            }
 
-            using (new LabelWidthScope(labelWidth))
-            {
-                _exitTime = EditorGUILayout.FloatField("Exit Time", _exitTime);
-                _fixedDuration = EditorGUILayout.Toggle("Fixed Duration", _fixedDuration);
-                _transitionDuration = EditorGUILayout.IntField("Transition Duration", _transitionDuration);
-                _transitionOffset = EditorGUILayout.IntField("Transition Offset", _transitionOffset);
-                _keepWriteDefaultsOfBlendTree = EditorGUILayout.Toggle(Localization.S("keepWriteDefaultsOfBlendTree"),
-                    _keepWriteDefaultsOfBlendTree);
+                using (new LabelWidthScope(labelWidth))
+                {
+                    _exitTime = EditorGUILayout.FloatField("Exit Time", _exitTime);
+                    _fixedDuration = EditorGUILayout.Toggle("Fixed Duration", _fixedDuration);
+                    _transitionDuration = EditorGUILayout.IntField("Transition Duration", _transitionDuration);
+                    _transitionOffset = EditorGUILayout.IntField("Transition Offset", _transitionOffset);
+                    _keepWriteDefaultsOfBlendTree = EditorGUILayout.Toggle(
+                        Localization.S("keepWriteDefaultsOfBlendTree"),
+                        _keepWriteDefaultsOfBlendTree);
+                }
             }
         }
 
