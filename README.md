@@ -7,6 +7,8 @@ It also supports batch modification of transitions in sub-state machines, batch 
 For transitions for which no transition conditions are specified, the Has Exit Time is not changed by default.
 If you want to force Has Exit Time to be OFF, uncheck the “Do not change for transitions for which no transition conditions are specified” checkbox in the Settings section.
 
+![image](https://github.com/user-attachments/assets/08c68b0a-8b57-4c2e-8220-a9c3795cad46)
+
 # Tool Location
 - Tools/kesera2/Transition Helper
 
@@ -30,6 +32,8 @@ Transition Helperは、Animator ControllerのTransitionに含まれるHas Exit t
 
 なお、遷移条件の指定のないTransitionについてはデフォルトでHas Exit Timeに変更を加えないようにしています。
 強制的にHas Exit TimeをOFFにする場合は、設定欄から遷移条件の指定のないトランジションについては変更しないのチェックを外してください。
+
+![image](https://github.com/user-attachments/assets/44e8048b-59bb-4aec-b87b-4294efe83ab3)
 
 # ツールの場所 (Tool Location)
  - Tools/kesera2/Transition Helper
